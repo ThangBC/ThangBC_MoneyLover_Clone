@@ -29,14 +29,15 @@ const HomeScreen = props => {
     {key: 'third', title: 'TƯƠNG LAI'},
   ]);
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <View //------------HEADER------------------
+    <SafeAreaView style={{flex: 1}}>
+      <View //---------------HEADER-----------------
         style={{
           flexDirection: 'row',
-          flex: 0.1,
+          height: 55,
           alignItems: 'center',
           paddingHorizontal: 15,
           justifyContent: 'space-between',
+          backgroundColor: 'white',
         }}>
         <View style={{flex: 0.2}}>
           <Image
@@ -74,7 +75,7 @@ const HomeScreen = props => {
         </View>
       </View>
       <TabView
-        style={{flex: 0.9}}
+        style={{flex: 1}}
         navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={setIndex}

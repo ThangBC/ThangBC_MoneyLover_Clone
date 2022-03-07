@@ -11,9 +11,9 @@ import {colors, fontSizes} from '../../../constraints';
 
 const ThirdPage = props => {
   return (
-    <View style={{flex: 1, backgroundColor: colors.blurColorBlack2}}>
+    <View style={{flex: 1}}>
       <ScrollView>
-        <View style={{backgroundColor: 'white', padding: 10}}>
+        <View style={{backgroundColor: 'white', padding: 10, elevation: 5}}>
           <View
             style={{
               flexDirection: 'row',

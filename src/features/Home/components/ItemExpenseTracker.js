@@ -19,6 +19,7 @@ const ItemExpenseTracker = props => {
           backgroundColor: 'white',
           marginTop: index == 0 ? 35 : 0,
           marginBottom: 20,
+          elevation: 5,
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text style={{color: 'black', fontSize: fontSizes.h1}}>02</Text>
@@ -31,7 +32,12 @@ const ItemExpenseTracker = props => {
           </Text>
         </View>
         <View
-          style={{height: 1, backgroundColor: 'gray', alignItems: 'center'}}
+          style={{
+            height: 1,
+            backgroundColor: colors.blurColorBlack2,
+            alignItems: 'center',
+            marginVertical: 5,
+          }}
         />
         <View
           style={{
@@ -39,10 +45,15 @@ const ItemExpenseTracker = props => {
             marginTop: 5,
             justifyContent: 'space-between',
           }}>
-          <Text style={{color: 'black', fontSize: fontSizes.h3}}>
+          <Text style={{color: 'black', fontSize: fontSizes.h3, flex: 1}}>
             Sửa trang trí nhà
           </Text>
-          <Text style={{color: colors.spentColor, fontSize: fontSizes.h3}}>
+          <Text
+            style={{
+              color: colors.spentColor,
+              fontSize: fontSizes.h3,
+              marginLeft: 10,
+            }}>
             2,000,000
           </Text>
         </View>
