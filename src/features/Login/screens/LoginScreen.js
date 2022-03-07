@@ -10,10 +10,18 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints';
+import {validateEmail, validatePassword} from '../../../utils/validations';
 
 const LoginScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
+
+  //set error email and password
+  const [errorEmail, setErrorEmail] = useState('');
+  const [errorPassword, setErrorPassword] = useState('');
+  //set email and password
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
 
@@ -94,12 +102,25 @@ const LoginScreen = props => {
               borderTopLeftRadius: 10,
               borderTopRightRadius: 10,
               paddingLeft: 10,
+              color: 'black',
             }}
             placeholder="Email"
             placeholderTextColor={'gray'}
+            onChangeText={textEmail => {
+              if (textEmail.trim().length == 0) {
+                setErrorEmail('*Vui lòng không để trống Email');
+              } else if (!validateEmail(textEmail)) {
+                setErrorEmail('*Vui lòng nhập đúng định dạng Email');
+              } else {
+                setErrorEmail('');
+                setEmail(textEmail);
+                return;
+              }
+              setEmail('');
+            }}
           />
           <View style={{backgroundColor: 'gray', height: 1}} />
-          <View style={{justifyContent: 'center'}}>
+          <View style={{justifyContent: 'center', marginBottom: 10}}>
             <TextInput
               style={{
                 backgroundColor: colors.blurColorBlack,
@@ -113,6 +134,23 @@ const LoginScreen = props => {
               secureTextEntry={hidePass ? true : false}
               placeholder="Mật khẩu"
               placeholderTextColor={'gray'}
+              onChangeText={textPassword => {
+                if (textPassword.trim().length == 0) {
+                  setErrorPassword('*Vui lòng không để trống mật khẩu');
+                } else if (validatePassword(textPassword)) {
+                  setErrorPassword('*Vui lòng không nhập ký tự đặc biệt');
+                } else if (
+                  textPassword.trim().length < 4 ||
+                  textPassword.trim().length > 20
+                ) {
+                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
+                } else {
+                  setErrorPassword('');
+                  setPassword(textPassword);
+                  return;
+                }
+                setPassword('');
+              }}
             />
             <Icon
               onPress={() => {
@@ -124,18 +162,42 @@ const LoginScreen = props => {
               style={{position: 'absolute', right: 10}}
             />
           </View>
+          {errorEmail != '' ? (
+            <Text
+              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
+              {errorEmail}
+            </Text>
+          ) : errorPassword != '' ? (
+            <Text
+              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
+              {errorPassword}
+            </Text>
+          ) : (
+            <View />
+          )}
+
           <TouchableOpacity
+            disabled={email != '' && password != '' ? false : true}
             onPress={() => {
-              navigate('UITab');
+              alert(`Email: ${email} Password: ${password}`);
+              // navigate('UITab');
             }}
             style={{
-              backgroundColor: colors.primaryColor,
+              backgroundColor:
+                email != '' && password != ''
+                  ? colors.primaryColor
+                  : colors.blurColorBlack2,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 10,
-              marginTop: 20,
+              marginTop: 10,
             }}>
-            <Text style={{color: 'white', padding: 10, fontSize: fontSizes.h3}}>
+            <Text
+              style={{
+                color: email != '' && password != '' ? 'white' : 'gray',
+                padding: 10,
+                fontSize: fontSizes.h3,
+              }}>
               Đăng nhập
             </Text>
           </TouchableOpacity>
