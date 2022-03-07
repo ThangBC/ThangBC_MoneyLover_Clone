@@ -10,10 +10,18 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
+import {validateEmail, validatePassword} from '../../../utils/validations';
 
 const RegisterScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
+
+  //set text input email & password
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  //set text error email & password
+  const [errorEmail, setErrorEmail] = useState('');
+  const [errorPassword, setErrorPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
   return (
@@ -85,7 +93,28 @@ const RegisterScreen = props => {
           <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
         </View>
         <View //---------REGISTER_EMAIL&PASSWORD-----------
-          style={{width: '70%', alignSelf: 'center', marginTop: 30}}>
+          style={{width: '70%', alignSelf: 'center', marginTop: 20}}>
+          {errorEmail != '' ? (
+            <Text
+              style={{
+                color: 'red',
+                marginLeft: 10,
+                fontSize: fontSizes.h5,
+              }}>
+              {errorEmail}
+            </Text>
+          ) : errorPassword != '' ? (
+            <Text
+              style={{
+                color: 'red',
+                marginLeft: 10,
+                fontSize: fontSizes.h5,
+              }}>
+              {errorPassword}
+            </Text>
+          ) : (
+            <View />
+          )}
           <TextInput
             style={{
               backgroundColor: colors.blurColorBlack,
@@ -94,12 +123,25 @@ const RegisterScreen = props => {
               borderTopRightRadius: 10,
               paddingHorizontal: 10,
               color: 'black',
+              marginTop: 10,
             }}
             placeholder="Email"
             placeholderTextColor={'gray'}
+            onChangeText={textEmail => {
+              if (textEmail.trim().length == 0) {
+                setErrorEmail('*Vui lòng không để trống Email');
+              } else if (!validateEmail(textEmail)) {
+                setErrorEmail('*Vui lòng nhập đúng định dạng Email');
+              } else {
+                setErrorEmail('');
+                setEmail(textEmail);
+                return;
+              }
+              setEmail('');
+            }}
           />
           <View style={{backgroundColor: 'gray', height: 1}} />
-          <View style={{justifyContent: 'center'}}>
+          <View style={{justifyContent: 'center', marginBottom: 10}}>
             <TextInput
               style={{
                 backgroundColor: colors.blurColorBlack,
@@ -113,6 +155,23 @@ const RegisterScreen = props => {
               secureTextEntry={hidePass ? true : false}
               placeholder="Mật khẩu"
               placeholderTextColor={'gray'}
+              onChangeText={textPassword => {
+                if (textPassword.trim().length == 0) {
+                  setErrorPassword('*Vui lòng không để trống mật khẩu');
+                } else if (validatePassword(textPassword)) {
+                  setErrorPassword('*Vui lòng không nhập những ký tự đặc biệt');
+                } else if (
+                  textPassword.trim().length < 4 ||
+                  textPassword.trim().length > 20
+                ) {
+                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
+                } else {
+                  setErrorPassword('');
+                  setPassword(textPassword);
+                  return;
+                }
+                setPassword('');
+              }}
             />
             <Icon
               onPress={() => {
@@ -126,17 +185,26 @@ const RegisterScreen = props => {
           </View>
 
           <TouchableOpacity
+            disabled={email != '' && password != '' ? false : true}
             onPress={() => {
               navigate('UITab');
             }}
             style={{
-              backgroundColor: colors.primaryColor,
+              backgroundColor:
+                email != '' && password != ''
+                  ? colors.primaryColor
+                  : colors.blurColorBlack2,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 10,
-              marginTop: 20,
+              marginTop: 10,
             }}>
-            <Text style={{color: 'white', padding: 10, fontSize: fontSizes.h3}}>
+            <Text
+              style={{
+                color: email != '' && password != '' ? 'white' : 'gray',
+                padding: 10,
+                fontSize: fontSizes.h3,
+              }}>
               Đăng ký
             </Text>
           </TouchableOpacity>
