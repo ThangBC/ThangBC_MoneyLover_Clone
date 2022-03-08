@@ -13,7 +13,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {validateMoney} from '../../../utils/validations';
 
-const AddTransactionScreen = props => {
+const EditTransactionScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 
@@ -51,9 +51,9 @@ const AddTransactionScreen = props => {
       <View //-----------HEADER----------------
         style={{
           height: 55,
-          alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
+          alignItems: 'center',
           paddingRight: 10,
           backgroundColor: 'white',
           elevation: 2,
@@ -78,7 +78,7 @@ const AddTransactionScreen = props => {
             flex: 1,
             marginLeft: 10,
           }}>
-          Thêm giao dịch
+          Sửa giao dịch
         </Text>
         <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
       </View>
@@ -202,5 +202,4 @@ const AddTransactionScreen = props => {
     </SafeAreaView>
   );
 };
-
-export default AddTransactionScreen;
+export default EditTransactionScreen;

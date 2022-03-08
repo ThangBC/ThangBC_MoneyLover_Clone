@@ -13,16 +13,13 @@ import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {FirstPage, SecondPage, ThirdPage} from '..';
 
-const renderScene = SceneMap({
-  first: FirstPage,
-  second: SecondPage,
-  third: ThirdPage,
-});
-
 const HomeScreen = props => {
+  console.log(`Home: ${JSON.stringify(props)}`);
+  const {navigation, route} = props;
+  const {navigate, goBack} = navigation;
   const layout = useWindowDimensions();
-
   const [index, setIndex] = React.useState(0);
+
   const [routes] = React.useState([
     {key: 'first', title: 'CÁC THÁNG TRƯỚC'},
     {key: 'second', title: 'THÁNG NÀY'},
@@ -74,10 +71,22 @@ const HomeScreen = props => {
           <Icon name="ellipsis-v" size={25} color="black" />
         </View>
       </View>
+
       <TabView
         style={{flex: 1}}
         navigationState={{index, routes}}
-        renderScene={renderScene}
+        renderScene={({route, jumpTo}) => {
+          switch (route.key) {
+            case 'first':
+              return <FirstPage navigation={props.navigation} route={route} />;
+            case 'second':
+              return <SecondPage navigation={props.navigation} route={route} />;
+            case 'third':
+              return <ThirdPage navigation={props.navigation} route={route} />;
+            default:
+              return null;
+          }
+        }}
         onIndexChange={setIndex}
         initialLayout={{width: layout.width}}
         renderTabBar={props => (

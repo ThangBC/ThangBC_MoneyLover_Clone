@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   View,
@@ -8,12 +8,16 @@ import {
   ScrollView,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
+import ItemExpenseTracker from './ItemExpenseTracker';
 
 const SecondPage = props => {
+  const {navigation} = props;
+  const {navigate, goBack} = navigation;
+  const [trans, setTrans] = useState([1, 2, 3, 4]);
   return (
     <View style={{flex: 1}}>
       <ScrollView>
-        <View style={{backgroundColor: 'white', padding: 10, elevation: 5}}>
+        <View style={{backgroundColor: 'white', padding: 10, elevation: 2}}>
           <View
             style={{
               flexDirection: 'row',
@@ -87,36 +91,17 @@ const SecondPage = props => {
             </TouchableOpacity>
           </View>
         </View>
-        <View>
-          <View style={{padding: 10, backgroundColor: 'white', marginTop: 30}}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={{color: 'black', fontSize: fontSizes.h1}}>02</Text>
-              <View style={{flex: 1, marginLeft: 10}}>
-                <Text style={{color: 'black'}}>Hôm nay</Text>
-                <Text style={{color: 'gray'}}>tháng 3 2022</Text>
-              </View>
-              <Text style={{color: 'black', fontSize: fontSizes.h3}}>
-                -2,000,000
-              </Text>
-            </View>
-            <View
-              style={{height: 1, backgroundColor: 'gray', alignItems: 'center'}}
+        {trans.map((item, index) => {
+          return (
+            <ItemExpenseTracker
+              index={index}
+              key={index}
+              onPress={() => {
+                navigate('ShowDetailTransScreen');
+              }}
             />
-            <View
-              style={{
-                flexDirection: 'row',
-                marginTop: 5,
-                justifyContent: 'space-between',
-              }}>
-              <Text style={{color: 'black', fontSize: fontSizes.h3}}>
-                Sửa trang trí nhà
-              </Text>
-              <Text style={{color: colors.spentColor, fontSize: fontSizes.h3}}>
-                2,000,000
-              </Text>
-            </View>
-          </View>
-        </View>
+          );
+        })}
       </ScrollView>
     </View>
   );

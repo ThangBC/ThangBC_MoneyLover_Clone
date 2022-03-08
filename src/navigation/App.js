@@ -7,6 +7,8 @@ import {
   RegisterScreen,
   HomeScreen,
   AddTransactionScreen,
+  ShowDetailTransScreen,
+  EditTransactionScreen,
 } from '../features/';
 import UITab from './UITab';
 
@@ -22,6 +24,14 @@ const App = props => {
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
         <Stack.Screen name="UITab" component={UITab} />
+        <Stack.Screen
+          name="ShowDetailTransScreen"
+          component={ShowDetailTransScreen}
+        />
+        <Stack.Screen
+          name="EditTransactionScreen"
+          component={EditTransactionScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
