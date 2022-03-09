@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
@@ -11,6 +11,15 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
 import {validateEmail, validatePassword} from '../../../utils/validations';
+import {
+  auth,
+  createUserWithEmailAndPassword,
+  collection,
+  addDoc,
+  db,
+  setDoc,
+  doc,
+} from '../../../firebase/firebase';
 
 const RegisterScreen = props => {
   const {navigation, route} = props;
@@ -24,6 +33,24 @@ const RegisterScreen = props => {
   const [errorPassword, setErrorPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
+
+  const handleRegister = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async userCredentials => {
+        const user = userCredentials.user;
+        console.log(userCredentials);
+        const newUser = doc(collection(db, 'users'));
+        await setDoc(newUser, {
+          createdAt: new Date(),
+          email: user.email,
+        });
+        console.log(userCredentials);
+        navigate('UITab');
+      })
+      .catch(err => {
+        alert(err.message);
+      });
+  };
   return (
     <SafeAreaView style={{flex: 1, padding: 10}}>
       <ScrollView>
@@ -161,10 +188,10 @@ const RegisterScreen = props => {
                 } else if (validatePassword(textPassword)) {
                   setErrorPassword('*Vui lòng không nhập những ký tự đặc biệt');
                 } else if (
-                  textPassword.trim().length < 4 ||
+                  textPassword.trim().length < 6 ||
                   textPassword.trim().length > 20
                 ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
+                  setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
                 } else {
                   setErrorPassword('');
                   setPassword(textPassword);
@@ -186,9 +213,7 @@ const RegisterScreen = props => {
 
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
-            onPress={() => {
-              navigate('UITab');
-            }}
+            onPress={handleRegister}
             style={{
               backgroundColor:
                 email != '' && password != ''

@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   Text,
   View,
@@ -11,6 +11,7 @@ import {
 import {colors, fontSizes} from '../../../constraints';
 import slides from '../components/slides';
 import SlideItem from '../components/SlideItem';
+import {auth, onAuthStateChanged} from '../../../firebase/firebase';
 
 const HelloScreen = props => {
   const {navigation, route} = props;
@@ -28,6 +29,14 @@ const HelloScreen = props => {
       }
     }
   };
+
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, user => {
+  //     if (user) {
+  //       navigate('UITab');
+  //     }
+  //   });
+  // }, []);
   return (
     <SafeAreaView style={{flex: 1}}>
       <View //-------------HEADER---------------

@@ -10,8 +10,26 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
+import {auth, signOut} from '../../../firebase/firebase';
 
 const ProfileScreen = props => {
+  const {navigation, route} = props;
+  const {navigate, goBack} = navigation;
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        navigate('HelloScreen');
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+  };
+
+  const displayName = () => {
+    let index = auth.currentUser?.email.indexOf('@');
+    return auth.currentUser?.email.substring(0, index).toUpperCase();
+  };
+
   return (
     <View style={{flex: 1}}>
       <View //-----------HEADER----------------
@@ -34,7 +52,7 @@ const ProfileScreen = props => {
           style={{marginTop: 20}}
         />
         <Text style={{color: 'black', fontSize: fontSizes.h3, marginTop: 10}}>
-          BUICONGTHANG4821
+          {displayName()}
         </Text>
         <Text
           style={{
@@ -43,10 +61,11 @@ const ProfileScreen = props => {
             marginTop: 5,
             marginBottom: 20,
           }}>
-          buicongthang4821@gmail.com
+          {auth.currentUser?.email}
         </Text>
       </View>
       <TouchableOpacity
+        onPress={handleSignOut}
         style={{
           alignItems: 'center',
           backgroundColor: 'white',

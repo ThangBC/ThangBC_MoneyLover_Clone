@@ -11,6 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints';
 import {validateEmail, validatePassword} from '../../../utils/validations';
+import {auth, signInWithEmailAndPassword} from '../../../firebase/firebase';
 
 const LoginScreen = props => {
   const {navigation, route} = props;
@@ -24,6 +25,18 @@ const LoginScreen = props => {
   const [password, setPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
+
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log(user.email);
+        navigate('UITab');
+      })
+      .catch(err => {
+        alert(err.message);
+      });
+  };
 
   return (
     <SafeAreaView style={{flex: 1, padding: 10}}>
@@ -154,10 +167,10 @@ const LoginScreen = props => {
                 } else if (validatePassword(textPassword)) {
                   setErrorPassword('*Vui lòng không nhập ký tự đặc biệt');
                 } else if (
-                  textPassword.trim().length < 4 ||
+                  textPassword.trim().length < 6 ||
                   textPassword.trim().length > 20
                 ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
+                  setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
                 } else {
                   setErrorPassword('');
                   setPassword(textPassword);
@@ -178,9 +191,7 @@ const LoginScreen = props => {
           </View>
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
-            onPress={() => {
-              navigate('UITab');
-            }}
+            onPress={handleLogin}
             style={{
               backgroundColor:
                 email != '' && password != ''
