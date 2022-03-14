@@ -11,7 +11,13 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints';
 import {validateEmail, validatePassword} from '../../../utils/validations';
-import {auth, signInWithEmailAndPassword} from '../../../firebase/firebase';
+import {
+  auth,
+  signInWithEmailAndPassword,
+  signInWithCredential,
+  GoogleAuthProvider,
+  GoogleSignin,
+} from '../../../firebase/firebase';
 
 const LoginScreen = props => {
   const {navigation, route} = props;
@@ -25,6 +31,25 @@ const LoginScreen = props => {
   const [password, setPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const {idToken} = await GoogleSignin.signIn();
+
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      const res = signInWithCredential(auth, googleCredential);
+      res
+        .then(user => {
+          navigate('UITab');
+        })
+        .catch(err => {
+          alert(err.message);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
@@ -60,9 +85,7 @@ const LoginScreen = props => {
         <View //---------LOGIN_GOOGLE-----------
           style={{width: '70%', alignSelf: 'center', marginTop: 15}}>
           <TouchableOpacity
-            onPress={() => {
-              alert('Tính năng đang được phát triển');
-            }}
+            onPress={handleGoogleSignIn}
             style={{
               flexDirection: 'row',
               borderColor: '#EB4132',

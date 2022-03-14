@@ -5,8 +5,6 @@ import {
   HelloScreen,
   LoginScreen,
   RegisterScreen,
-  HomeScreen,
-  AddTransactionScreen,
   ShowDetailTransScreen,
   EditTransactionScreen,
 } from '../features/';
