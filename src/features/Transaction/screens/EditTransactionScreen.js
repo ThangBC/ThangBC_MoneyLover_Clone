@@ -11,8 +11,9 @@ import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
+import {validateMoney} from '../../../utils/validations';
 
-const AddTransactionScreen = props => {
+const EditTransactionScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 
@@ -49,12 +50,13 @@ const AddTransactionScreen = props => {
     <SafeAreaView style={{flex: 1}}>
       <View //-----------HEADER----------------
         style={{
-          height: 50,
-          alignItems: 'center',
+          height: 55,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingRight: 10,
+          backgroundColor: 'white',
+          elevation: 2,
         }}>
         <Icon
           name="times"
@@ -76,11 +78,17 @@ const AddTransactionScreen = props => {
             flex: 1,
             marginLeft: 10,
           }}>
-          Thêm giao dịch
+          Sửa giao dịch
         </Text>
         <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
       </View>
-      <View style={{padding: 10}}>
+      <View
+        style={{
+          padding: 10,
+          backgroundColor: 'white',
+          marginTop: 30,
+          elevation: 2,
+        }}>
         <View //-----------MONEY------------
           style={{flexDirection: 'row'}}>
           <View style={{flex: 0.1}} />
@@ -92,12 +100,14 @@ const AddTransactionScreen = props => {
               placeholderTextColor={'gray'}
               value={money}
               onChangeText={text => {
-                if (/^\d+$/.test(text) || text === '') {
+                if (validateMoney(text) || text === '') {
                   setMoney(text);
                 }
               }}
             />
-            <View style={{backgroundColor: 'gray', height: 1}} />
+            <View
+              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
+            />
           </View>
         </View>
         <View //-----------TYPE------------
@@ -105,6 +115,7 @@ const AddTransactionScreen = props => {
           <View style={{flex: 0.1}} />
           <View style={{flex: 0.9, flexDirection: 'column'}}>
             <Picker
+              dropdownIconColor={'black'}
               style={{color: 'black'}}
               selectedValue={selectedLanguage}
               onValueChange={(itemValue, itemIndex) =>
@@ -122,7 +133,9 @@ const AddTransactionScreen = props => {
               <Picker.Item label="Tiền bán đồ" value="Tiền bán đồ" />
               <Picker.Item label="Khác" value="Khác" />
             </Picker>
-            <View style={{backgroundColor: 'gray', height: 1}} />
+            <View
+              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
+            />
           </View>
         </View>
         <View //-----------DESCRIPTION------------
@@ -141,7 +154,9 @@ const AddTransactionScreen = props => {
               placeholder={'Thêm ghi chú'}
               placeholderTextColor={'gray'}
             />
-            <View style={{backgroundColor: 'gray', height: 1}} />
+            <View
+              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
+            />
           </View>
         </View>
         <View //----------DAY------------
@@ -168,7 +183,9 @@ const AddTransactionScreen = props => {
                 {dateText}
               </Text>
             </TouchableOpacity>
-            <View style={{backgroundColor: 'gray', height: 1}} />
+            <View
+              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
+            />
           </View>
           {show && (
             <DateTimePicker
@@ -185,5 +202,4 @@ const AddTransactionScreen = props => {
     </SafeAreaView>
   );
 };
-
-export default AddTransactionScreen;
+export default EditTransactionScreen;
