@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import AddTransactionScreen from './AddTransaction/screens/AddTransactionScreen';
-
-export {AddTransactionScreen};
-=======
 import HelloScreen from './Hello/screens/HelloScreen';
 import LoginScreen from './Login/screens/LoginScreen';
 import RegisterScreen from './Register/screens/RegisterScreen';
@@ -22,4 +17,3 @@ export {
   ShowDetailTransScreen,
   EditTransactionScreen,
 };
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
