@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "875900993588",
+    "project_id": "moneylover-clone-634d1",
+    "storage_bucket": "moneylover-clone-634d1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875900993588:android:6ad96631e9bef70a2eca61",
+        "android_client_info": {
+          "package_name": "com.moneylover_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875900993588-22qae3bave9nctig8q4f5bvbchns81s9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADKfMUkJSFdTlTbMG_vALbzByk13Sw28A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875900993588-22qae3bave9nctig8q4f5bvbchns81s9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

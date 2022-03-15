@@ -13,12 +13,15 @@ import {fontSizes, colors} from '../../../constraints/';
 import {validateEmail, validatePassword} from '../../../utils/validations';
 import {
   auth,
+  signInWithCredential,
   createUserWithEmailAndPassword,
   collection,
-  addDoc,
   db,
   setDoc,
   doc,
+  GoogleAuthProvider,
+  GoogleSignin,
+  statusCodes,
 } from '../../../firebase/firebase';
 
 const RegisterScreen = props => {
@@ -33,6 +36,25 @@ const RegisterScreen = props => {
   const [errorPassword, setErrorPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const {idToken} = await GoogleSignin.signIn();
+
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      const res = signInWithCredential(auth, googleCredential);
+      res
+        .then(user => {
+          navigate('UITab');
+        })
+        .catch(err => {
+          alert(err.message);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleRegister = () => {
     createUserWithEmailAndPassword(auth, email, password)
@@ -74,7 +96,7 @@ const RegisterScreen = props => {
           style={{width: '70%', alignSelf: 'center', marginTop: 15}}>
           <TouchableOpacity
             onPress={() => {
-              alert('Tính năng đang được phát triển');
+              handleGoogleSignIn();
             }}
             style={{
               flexDirection: 'row',
