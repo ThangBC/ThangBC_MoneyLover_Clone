@@ -163,7 +163,7 @@ const HelloScreen = props => {
         </TouchableOpacity>
         <Text
           style={{color: 'gray', marginVertical: 20, fontSize: fontSizes.h5}}>
-          Clone by Bui Cong Thang
+          Bui Cong Thang 123
         </Text>
       </View>
     </SafeAreaView>
