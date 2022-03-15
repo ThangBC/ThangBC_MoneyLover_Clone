@@ -164,7 +164,7 @@ const HelloScreen = props => {
         </TouchableOpacity>
         <Text
           style={{color: 'gray', marginVertical: 20, fontSize: fontSizes.h5}}>
-          Bùi Công Thắng
+          Bui Cong Thang 123
         </Text>
       </View>
     </SafeAreaView>

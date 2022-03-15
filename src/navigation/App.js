@@ -11,6 +11,7 @@ import {
   EditTransactionScreen,
 } from '../features/';
 import UITab from './UITab';
+import codePush from 'react-native-code-push';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,4 +38,4 @@ const App = props => {
   );
 };
 
-export default App;
+export default codePush(App);
