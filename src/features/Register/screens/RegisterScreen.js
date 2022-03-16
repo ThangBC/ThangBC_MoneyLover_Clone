@@ -15,13 +15,8 @@ import {
   auth,
   signInWithCredential,
   createUserWithEmailAndPassword,
-  collection,
-  db,
-  setDoc,
-  doc,
   GoogleAuthProvider,
   GoogleSignin,
-  statusCodes,
 } from '../../../firebase/firebase';
 
 const RegisterScreen = props => {
@@ -60,12 +55,6 @@ const RegisterScreen = props => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(async userCredentials => {
         const user = userCredentials.user;
-        console.log(userCredentials);
-        const newUser = doc(collection(db, 'users'));
-        await setDoc(newUser, {
-          createdAt: new Date(),
-          email: user.email,
-        });
         console.log(userCredentials);
         navigate('UITab');
       })
@@ -232,7 +221,6 @@ const RegisterScreen = props => {
               style={{position: 'absolute', right: 10}}
             />
           </View>
-
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
             onPress={handleRegister}

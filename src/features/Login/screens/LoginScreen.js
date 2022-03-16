@@ -41,6 +41,7 @@ const LoginScreen = props => {
       const res = signInWithCredential(auth, googleCredential);
       res
         .then(user => {
+          console.log(user);
           navigate('UITab');
         })
         .catch(err => {
@@ -212,6 +213,20 @@ const LoginScreen = props => {
               style={{position: 'absolute', right: 10}}
             />
           </View>
+          {errorEmail != '' ? (
+            <Text
+              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
+              {errorEmail}
+            </Text>
+          ) : errorPassword != '' ? (
+            <Text
+              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
+              {errorPassword}
+            </Text>
+          ) : (
+            <View />
+          )}
+
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
             onPress={handleLogin}
