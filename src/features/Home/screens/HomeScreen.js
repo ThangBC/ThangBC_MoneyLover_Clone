@@ -14,7 +14,6 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import {FirstPage, SecondPage, ThirdPage} from '..';
 
 const HomeScreen = props => {
-  console.log(`Home: ${JSON.stringify(props)}`);
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
   const layout = useWindowDimensions();

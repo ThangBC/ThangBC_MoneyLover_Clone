@@ -15,13 +15,8 @@ import {
   auth,
   signInWithCredential,
   createUserWithEmailAndPassword,
-  collection,
-  db,
-  setDoc,
-  doc,
   GoogleAuthProvider,
   GoogleSignin,
-  statusCodes,
 } from '../../../firebase/firebase';
 
 const RegisterScreen = props => {
