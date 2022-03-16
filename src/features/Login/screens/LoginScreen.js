@@ -41,6 +41,7 @@ const LoginScreen = props => {
       const res = signInWithCredential(auth, googleCredential);
       res
         .then(user => {
+          console.log(user);
           navigate('UITab');
         })
         .catch(err => {
