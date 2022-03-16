@@ -1,11 +1,10 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
   Image,
   TouchableOpacity,
   FlatList,
-  Animated,
   SafeAreaView,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
@@ -19,7 +18,7 @@ const HelloScreen = props => {
 
   const [imgActive, setImgActive] = useState(0);
 
-  onchange = nativeEvent => {
+  const onchange = nativeEvent => {
     if (nativeEvent) {
       const slide = Math.ceil(
         nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width,
@@ -30,13 +29,13 @@ const HelloScreen = props => {
     }
   };
 
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, user => {
-  //     if (user) {
-  //       navigate('UITab');
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        navigate('UITab');
+      }
+    });
+  }, []);
   return (
     <SafeAreaView style={{flex: 1}}>
       <View //-------------HEADER---------------
@@ -164,7 +163,7 @@ const HelloScreen = props => {
         </TouchableOpacity>
         <Text
           style={{color: 'gray', marginVertical: 20, fontSize: fontSizes.h5}}>
-          Bùi Công Thắng
+          Bui Cong Thang 123
         </Text>
       </View>
     </SafeAreaView>
