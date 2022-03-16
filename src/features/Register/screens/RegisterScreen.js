@@ -11,8 +11,6 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
 import {validateEmail, validatePassword} from '../../../utils/validations';
-<<<<<<< HEAD
-=======
 import {
   auth,
   createUserWithEmailAndPassword,
@@ -22,7 +20,6 @@ import {
   setDoc,
   doc,
 } from '../../../firebase/firebase';
->>>>>>> 0c89ede5586fd64fc648a73fc181ab37fae9f331
 
 const RegisterScreen = props => {
   const {navigation, route} = props;
@@ -191,17 +188,10 @@ const RegisterScreen = props => {
                 } else if (validatePassword(textPassword)) {
                   setErrorPassword('*Vui lòng không nhập những ký tự đặc biệt');
                 } else if (
-<<<<<<< HEAD
-                  textPassword.trim().length < 4 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
-=======
                   textPassword.trim().length < 6 ||
                   textPassword.trim().length > 20
                 ) {
                   setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
->>>>>>> 0c89ede5586fd64fc648a73fc181ab37fae9f331
                 } else {
                   setErrorPassword('');
                   setPassword(textPassword);
@@ -222,14 +212,7 @@ const RegisterScreen = props => {
           </View>
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
-<<<<<<< HEAD
-            onPress={() => {
-              alert(`Email: ${email} Password: ${password}`);
-              // navigate('UITab');
-            }}
-=======
             onPress={handleRegister}
->>>>>>> 0c89ede5586fd64fc648a73fc181ab37fae9f331
             style={{
               backgroundColor:
                 email != '' && password != ''
