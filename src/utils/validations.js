@@ -6,4 +6,8 @@ const validatePassword = textInputPassword => {
   return /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(textInputPassword);
 };
 
-export {validateEmail, validatePassword};
+const validateMoney = textInputMoney => {
+  return /^\d+$/.test(textInputMoney);
+};
+
+export {validateEmail, validatePassword, validateMoney};

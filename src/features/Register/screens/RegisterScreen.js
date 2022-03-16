@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
@@ -9,26 +9,31 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {fontSizes, colors} from '../../../constraints';
+import {fontSizes, colors} from '../../../constraints/';
 import {validateEmail, validatePassword} from '../../../utils/validations';
 import {
   auth,
-  signInWithEmailAndPassword,
   signInWithCredential,
+  createUserWithEmailAndPassword,
+  collection,
+  db,
+  setDoc,
+  doc,
   GoogleAuthProvider,
   GoogleSignin,
+  statusCodes,
 } from '../../../firebase/firebase';
 
-const LoginScreen = props => {
+const RegisterScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 
-  //set error email and password
-  const [errorEmail, setErrorEmail] = useState('');
-  const [errorPassword, setErrorPassword] = useState('');
-  //set email and password
+  //set text input email & password
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  //set text error email & password
+  const [errorEmail, setErrorEmail] = useState('');
+  const [errorPassword, setErrorPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
 
@@ -47,22 +52,27 @@ const LoginScreen = props => {
           alert(err.message);
         });
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
-  const handleLogin = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(userCredentials => {
+  const handleRegister = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async userCredentials => {
         const user = userCredentials.user;
-        console.log(user.email);
+        console.log(userCredentials);
+        const newUser = doc(collection(db, 'users'));
+        await setDoc(newUser, {
+          createdAt: new Date(),
+          email: user.email,
+        });
+        console.log(userCredentials);
         navigate('UITab');
       })
       .catch(err => {
         alert(err.message);
       });
   };
-
   return (
     <SafeAreaView style={{flex: 1, padding: 10}}>
       <ScrollView>
@@ -80,12 +90,14 @@ const LoginScreen = props => {
         </View>
         <Text
           style={{color: 'black', fontSize: fontSizes.h1, alignSelf: 'center'}}>
-          Đăng nhập
+          Đăng ký
         </Text>
         <View //---------LOGIN_GOOGLE-----------
           style={{width: '70%', alignSelf: 'center', marginTop: 15}}>
           <TouchableOpacity
-            onPress={handleGoogleSignIn}
+            onPress={() => {
+              handleGoogleSignIn();
+            }}
             style={{
               flexDirection: 'row',
               borderColor: '#EB4132',
@@ -129,16 +141,24 @@ const LoginScreen = props => {
           </Text>
           <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
         </View>
-        <View //---------LOGIN_EMAIL&PASSWORD-----------
+        <View //---------REGISTER_EMAIL&PASSWORD-----------
           style={{width: '70%', alignSelf: 'center', marginTop: 20}}>
           {errorEmail != '' ? (
             <Text
-              style={{color: 'red', fontSize: fontSizes.h5, marginLeft: 10}}>
+              style={{
+                color: 'red',
+                marginLeft: 10,
+                fontSize: fontSizes.h5,
+              }}>
               {errorEmail}
             </Text>
           ) : errorPassword != '' ? (
             <Text
-              style={{color: 'red', fontSize: fontSizes.h5, marginLeft: 10}}>
+              style={{
+                color: 'red',
+                marginLeft: 10,
+                fontSize: fontSizes.h5,
+              }}>
               {errorPassword}
             </Text>
           ) : (
@@ -150,12 +170,9 @@ const LoginScreen = props => {
               fontSize: fontSizes.h3,
               borderTopLeftRadius: 10,
               borderTopRightRadius: 10,
-              paddingLeft: 10,
+              paddingHorizontal: 10,
               color: 'black',
-<<<<<<< HEAD
-=======
               marginTop: 10,
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
             }}
             placeholder="Email"
             placeholderTextColor={'gray'}
@@ -191,19 +208,12 @@ const LoginScreen = props => {
                 if (textPassword.trim().length == 0) {
                   setErrorPassword('*Vui lòng không để trống mật khẩu');
                 } else if (validatePassword(textPassword)) {
-                  setErrorPassword('*Vui lòng không nhập ký tự đặc biệt');
+                  setErrorPassword('*Vui lòng không nhập những ký tự đặc biệt');
                 } else if (
-<<<<<<< HEAD
-                  textPassword.trim().length < 4 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
-=======
                   textPassword.trim().length < 6 ||
                   textPassword.trim().length > 20
                 ) {
                   setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
                 } else {
                   setErrorPassword('');
                   setPassword(textPassword);
@@ -222,30 +232,10 @@ const LoginScreen = props => {
               style={{position: 'absolute', right: 10}}
             />
           </View>
-          {errorEmail != '' ? (
-            <Text
-              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
-              {errorEmail}
-            </Text>
-          ) : errorPassword != '' ? (
-            <Text
-              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
-              {errorPassword}
-            </Text>
-          ) : (
-            <View />
-          )}
 
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
-<<<<<<< HEAD
-            onPress={() => {
-              alert(`Email: ${email} Password: ${password}`);
-              // navigate('UITab');
-            }}
-=======
-            onPress={handleLogin}
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
+            onPress={handleRegister}
             style={{
               backgroundColor:
                 email != '' && password != ''
@@ -262,36 +252,21 @@ const LoginScreen = props => {
                 padding: 10,
                 fontSize: fontSizes.h3,
               }}>
-              Đăng nhập
+              Đăng ký
             </Text>
           </TouchableOpacity>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
             <TouchableOpacity
               onPress={() => {
-                navigate('RegisterScreen');
+                navigate('LoginScreen');
               }}>
               <Text
                 style={{
                   color: colors.primaryColor,
                   marginTop: 10,
                   fontSize: fontSizes.h4,
-                  alignSelf: 'center',
                 }}>
-                Đăng ký
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                alert('Tính năng đang được phát triển');
-              }}>
-              <Text
-                style={{
-                  color: colors.primaryColor,
-                  marginTop: 10,
-                  fontSize: fontSizes.h4,
-                  alignSelf: 'center',
-                }}>
-                Quên mật khẩu ?
+                Đăng nhập
               </Text>
             </TouchableOpacity>
           </View>
@@ -301,4 +276,4 @@ const LoginScreen = props => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
