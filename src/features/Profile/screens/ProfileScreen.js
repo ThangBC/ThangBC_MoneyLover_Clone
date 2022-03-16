@@ -14,6 +14,7 @@ import Modal from 'react-native-modal';
 import {validatePassword} from '../../../utils/validations';
 
 const ProfileScreen = props => {
+  console.log(auth.currentUser?.providerData);
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 

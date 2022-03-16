@@ -61,12 +61,6 @@ const RegisterScreen = props => {
       .then(async userCredentials => {
         const user = userCredentials.user;
         console.log(userCredentials);
-        const newUser = doc(collection(db, 'users'));
-        await setDoc(newUser, {
-          createdAt: new Date(),
-          email: user.email,
-        });
-        console.log(userCredentials);
         navigate('UITab');
       })
       .catch(err => {
