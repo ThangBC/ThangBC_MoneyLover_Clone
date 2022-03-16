@@ -152,10 +152,7 @@ const LoginScreen = props => {
               borderTopRightRadius: 10,
               paddingLeft: 10,
               color: 'black',
-<<<<<<< HEAD
-=======
               marginTop: 10,
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
             }}
             placeholder="Email"
             placeholderTextColor={'gray'}
@@ -193,17 +190,10 @@ const LoginScreen = props => {
                 } else if (validatePassword(textPassword)) {
                   setErrorPassword('*Vui lòng không nhập ký tự đặc biệt');
                 } else if (
-<<<<<<< HEAD
-                  textPassword.trim().length < 4 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 4-20 ký tự');
-=======
                   textPassword.trim().length < 6 ||
                   textPassword.trim().length > 20
                 ) {
                   setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
                 } else {
                   setErrorPassword('');
                   setPassword(textPassword);
@@ -238,14 +228,7 @@ const LoginScreen = props => {
 
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
-<<<<<<< HEAD
-            onPress={() => {
-              alert(`Email: ${email} Password: ${password}`);
-              // navigate('UITab');
-            }}
-=======
             onPress={handleLogin}
->>>>>>> 42bf10897d4d2a5e4a2876618bab417ef824cf07
             style={{
               backgroundColor:
                 email != '' && password != ''
