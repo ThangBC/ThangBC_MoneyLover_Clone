@@ -19,27 +19,6 @@ import Modal from 'react-native-modal';
 import {validatePassword} from '../../../utils/validations';
 
 const ProfileScreen = props => {
-  // const [money, setMoney] = useState('');
-  // console.log(auth.currentUser?.providerData);
-  // let moneyStr = 0;
-  // useEffect(() => {
-  //   console.log('123');
-  //   getDocs(collection(db, 'transaction')).then(snapshot => {
-  //     snapshot.docs.forEach(async doc => {
-  //       moneyStr += doc.data().money;
-  //       setMoney(moneyStr);
-  //     });
-  //   });
-  // }, []);
-  // db.collection('transaction')
-  //   .where('createdById', '==', auth.currentUser?.uid)
-  //   .get()
-  //   .then(snapshot => {
-  //     snapshot.docs.forEach(doc => {
-  //       console.log(doc);
-  //     });
-  //   });
-
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 
@@ -172,7 +151,6 @@ const ProfileScreen = props => {
           Đăng xuất
         </Text>
       </TouchableOpacity>
-      <Text style={{color: 'black'}}>Tiền: {money}</Text>
       <Modal //--------------MODAL-----------------
         onBackdropPress={() => {
           setModalVisible(false);
