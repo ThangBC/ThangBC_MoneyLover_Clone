@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, TouchableOpacity, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
@@ -9,12 +9,37 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   GoogleSignin,
+  collection,
+  doc,
+  setDoc,
+  db,
+  getDocs,
 } from '../../../firebase/firebase';
 import Modal from 'react-native-modal';
 import {validatePassword} from '../../../utils/validations';
 
 const ProfileScreen = props => {
-  console.log(auth.currentUser?.providerData);
+  // const [money, setMoney] = useState('');
+  // console.log(auth.currentUser?.providerData);
+  // let moneyStr = 0;
+  // useEffect(() => {
+  //   console.log('123');
+  //   getDocs(collection(db, 'transaction')).then(snapshot => {
+  //     snapshot.docs.forEach(async doc => {
+  //       moneyStr += doc.data().money;
+  //       setMoney(moneyStr);
+  //     });
+  //   });
+  // }, []);
+  // db.collection('transaction')
+  //   .where('createdById', '==', auth.currentUser?.uid)
+  //   .get()
+  //   .then(snapshot => {
+  //     snapshot.docs.forEach(doc => {
+  //       console.log(doc);
+  //     });
+  //   });
+
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 
@@ -147,6 +172,7 @@ const ProfileScreen = props => {
           Đăng xuất
         </Text>
       </TouchableOpacity>
+      <Text style={{color: 'black'}}>Tiền: {money}</Text>
       <Modal //--------------MODAL-----------------
         onBackdropPress={() => {
           setModalVisible(false);
