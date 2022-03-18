@@ -84,12 +84,11 @@ const ProfileScreen = props => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       <View //-----------HEADER----------------
         style={{
           height: 70,
           padding: 10,
-          backgroundColor: 'white',
           justifyContent: 'center',
         }}>
         <Text style={{color: 'black', fontSize: fontSizes.h1, marginLeft: 5}}>
@@ -98,7 +97,7 @@ const ProfileScreen = props => {
       </View>
       <View style={{height: 1, backgroundColor: colors.blurColorBlack2}} />
       <View //-----------------INFORMATION-------------------
-        style={{backgroundColor: 'white', alignItems: 'center'}}>
+        style={{alignItems: 'center'}}>
         <Icon
           name="user-circle"
           size={70}
@@ -126,24 +125,34 @@ const ProfileScreen = props => {
         style={{
           alignItems: 'center',
           backgroundColor: 'white',
-          marginTop: 50,
-          elevation: 2,
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          borderColor: colors.blurColorBlack2,
           display: auth.currentUser?.photoURL ? 'none' : 'flex',
         }}>
-        <Text style={{color: 'black', fontSize: fontSizes.h3, padding: 10}}>
-          Đổi mật khẩu
+        <Text
+          style={{
+            color: colors.primaryColor,
+            fontSize: fontSizes.h3,
+            padding: 10,
+          }}>
+          Thay đổi mật khẩu
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={handleSignOut}
         style={{
+          alignSelf: 'center',
+          width: '90%',
+          position: 'absolute',
           alignItems: 'center',
-          backgroundColor: 'white',
+          backgroundColor: colors.blurColorBlack,
           marginTop: 30,
-          elevation: 2,
+          borderRadius: 30,
+          bottom: 20,
         }}>
-        <Text style={{color: 'red', fontSize: fontSizes.h2, padding: 10}}>
+        <Text style={{color: 'red', fontSize: fontSizes.h2, padding: 7}}>
           Đăng xuất
         </Text>
       </TouchableOpacity>
