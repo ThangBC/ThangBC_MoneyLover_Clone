@@ -35,7 +35,7 @@ const HomeScreen = props => {
           justifyContent: 'space-between',
           backgroundColor: 'white',
         }}>
-        <View style={{flex: 0.2}}>
+        <View style={{flex: 0.15}}>
           <Image
             source={require('../../../assets/wallet_icon.png')}
             style={{width: 35, height: 35}}
@@ -45,8 +45,7 @@ const HomeScreen = props => {
         <View
           style={{
             flexDirection: 'column',
-            alignItems: 'center',
-            flex: 0.6,
+            flex: 0.7,
           }}>
           <Text style={{color: 'gray'}}>Tiền mặt</Text>
           <Text
@@ -63,7 +62,7 @@ const HomeScreen = props => {
         <View
           style={{
             flexDirection: 'row',
-            flex: 0.2,
+            flex: 0.15,
             justifyContent: 'space-between',
           }}>
           <Icon name="bell" size={25} color="black" />
