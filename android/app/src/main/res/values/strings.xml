@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MoneyLover_Clone</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">8pspZEwTXTW_CdseB1wHVhwsQC9AwbKicuHLE</string>
 </resources>

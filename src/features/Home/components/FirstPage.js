@@ -11,11 +11,13 @@ import {colors, fontSizes} from '../../../constraints';
 import ItemExpenseTracker from './ItemExpenseTracker';
 
 const FirstPage = props => {
-  const [users, setUsers] = useState([1, 2, 3, 4, 5, 6, 7]);
+  const {navigation} = props;
+  const {navigate, goBack} = navigation;
+  const [trans, setTrans] = useState([1, 2, 3, 4, 5, 6, 7]);
   return (
-    <View style={{flex: 1, backgroundColor: colors.blurColorBlack2}}>
+    <View style={{flex: 1}}>
       <ScrollView>
-        <View style={{backgroundColor: 'white', padding: 10}}>
+        <View style={{backgroundColor: 'white', padding: 10, elevation: 2}}>
           <View
             style={{
               flexDirection: 'row',
@@ -89,8 +91,16 @@ const FirstPage = props => {
             </TouchableOpacity>
           </View>
         </View>
-        {users.map((item, index) => {
-          return <ItemExpenseTracker index={index} key={index} />;
+        {trans.map((item, index) => {
+          return (
+            <ItemExpenseTracker
+              index={index}
+              key={index}
+              onPress={() => {
+                navigate('ShowDetailTransScreen');
+              }}
+            />
+          );
         })}
       </ScrollView>
     </View>

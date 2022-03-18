@@ -13,30 +13,27 @@ import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {FirstPage, SecondPage, ThirdPage} from '..';
 
-const renderScene = SceneMap({
-  first: FirstPage,
-  second: SecondPage,
-  third: ThirdPage,
-});
-
 const HomeScreen = props => {
+  const {navigation, route} = props;
+  const {navigate, goBack} = navigation;
   const layout = useWindowDimensions();
-
   const [index, setIndex] = React.useState(0);
+
   const [routes] = React.useState([
     {key: 'first', title: 'CÁC THÁNG TRƯỚC'},
     {key: 'second', title: 'THÁNG NÀY'},
     {key: 'third', title: 'TƯƠNG LAI'},
   ]);
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <View //------------HEADER------------------
+    <SafeAreaView style={{flex: 1}}>
+      <View //---------------HEADER-----------------
         style={{
           flexDirection: 'row',
-          flex: 0.1,
+          height: 55,
           alignItems: 'center',
           paddingHorizontal: 15,
           justifyContent: 'space-between',
+          backgroundColor: 'white',
         }}>
         <View style={{flex: 0.2}}>
           <Image
@@ -73,10 +70,22 @@ const HomeScreen = props => {
           <Icon name="ellipsis-v" size={25} color="black" />
         </View>
       </View>
+
       <TabView
-        style={{flex: 0.9}}
+        style={{flex: 1}}
         navigationState={{index, routes}}
-        renderScene={renderScene}
+        renderScene={({route, jumpTo}) => {
+          switch (route.key) {
+            case 'first':
+              return <FirstPage navigation={props.navigation} route={route} />;
+            case 'second':
+              return <SecondPage navigation={props.navigation} route={route} />;
+            case 'third':
+              return <ThirdPage navigation={props.navigation} route={route} />;
+            default:
+              return null;
+          }
+        }}
         onIndexChange={setIndex}
         initialLayout={{width: layout.width}}
         renderTabBar={props => (
