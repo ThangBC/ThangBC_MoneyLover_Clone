@@ -31,6 +31,8 @@ const LoginScreen = props => {
   const [password, setPassword] = useState('');
 
   const [hidePass, setHidePass] = useState(true);
+  const [focusEmail, setFocusEmail] = useState(false);
+  const [focusPass, setFocusPass] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -83,20 +85,27 @@ const LoginScreen = props => {
           Đăng nhập
         </Text>
         <View //---------LOGIN_GOOGLE-----------
-          style={{width: '70%', alignSelf: 'center', marginTop: 15}}>
+          style={{width: '90%', alignSelf: 'center', marginTop: 15}}>
           <TouchableOpacity
             onPress={handleGoogleSignIn}
             style={{
+              backgroundColor: colors.blurColorBlack2,
               flexDirection: 'row',
-              borderColor: '#EB4132',
-              borderWidth: 1,
               alignItems: 'center',
               height: 40,
               borderRadius: 7,
+              justifyContent: 'center',
             }}>
             <Image
               source={require('../../../assets/google_logo.png')}
-              style={{width: 20, height: 20, marginLeft: 10, marginRight: 20}}
+              style={{
+                width: 20,
+                height: 20,
+                marginLeft: 10,
+                marginRight: 20,
+                position: 'absolute',
+                left: 5,
+              }}
             />
             <Text
               style={{
@@ -106,7 +115,13 @@ const LoginScreen = props => {
               Kết nối với Google
             </Text>
           </TouchableOpacity>
-          <Text style={{color: 'gray', textAlign: 'center', marginTop: 15}}>
+          <Text
+            style={{
+              color: 'gray',
+              textAlign: 'center',
+              marginTop: 15,
+              fontSize: fontSizes.h6,
+            }}>
             Chúng tôi sẽ không đăng thông tin mà không có sự cho phép của bạn
           </Text>
         </View>
@@ -130,32 +145,22 @@ const LoginScreen = props => {
           <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
         </View>
         <View //---------LOGIN_EMAIL&PASSWORD-----------
-          style={{width: '70%', alignSelf: 'center', marginTop: 20}}>
-          {errorEmail != '' ? (
-            <Text
-              style={{color: 'red', fontSize: fontSizes.h5, marginLeft: 10}}>
-              {errorEmail}
-            </Text>
-          ) : errorPassword != '' ? (
-            <Text
-              style={{color: 'red', fontSize: fontSizes.h5, marginLeft: 10}}>
-              {errorPassword}
-            </Text>
-          ) : (
-            <View />
-          )}
+          style={{width: '90%', alignSelf: 'center', marginTop: 20}}>
           <TextInput
+            onFocus={() => {
+              setFocusEmail(true);
+            }}
+            onBlur={() => {
+              setFocusEmail(false);
+            }}
             style={{
-              backgroundColor: colors.blurColorBlack,
               fontSize: fontSizes.h3,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-              paddingLeft: 10,
+              paddingHorizontal: 10,
               color: 'black',
               marginTop: 10,
             }}
             placeholder="Email"
-            placeholderTextColor={'gray'}
+            placeholderTextColor={focusEmail ? colors.primaryColor : 'gray'}
             onChangeText={textEmail => {
               if (textEmail.trim().length == 0) {
                 setErrorEmail('*Vui lòng không để trống Email');
@@ -169,21 +174,42 @@ const LoginScreen = props => {
               setEmail('');
             }}
           />
-          <View style={{backgroundColor: 'gray', height: 1}} />
-          <View style={{justifyContent: 'center', marginBottom: 10}}>
-            <TextInput
+          <View
+            style={{
+              backgroundColor: focusEmail ? colors.primaryColor : 'gray',
+              height: 2,
+            }}
+          />
+          {errorEmail != '' ? (
+            <Text
               style={{
-                backgroundColor: colors.blurColorBlack,
+                color: 'red',
+                marginLeft: 10,
+                fontSize: fontSizes.h5,
+              }}>
+              {errorEmail}
+            </Text>
+          ) : (
+            <View />
+          )}
+          <View
+            style={{justifyContent: 'center', marginBottom: 10, marginTop: 10}}>
+            <TextInput
+              onFocus={() => {
+                setFocusPass(true);
+              }}
+              onBlur={() => {
+                setFocusPass(false);
+              }}
+              style={{
                 fontSize: fontSizes.h3,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
                 paddingLeft: 10,
                 paddingRight: 40,
                 color: 'black',
               }}
               secureTextEntry={hidePass ? true : false}
               placeholder="Mật khẩu"
-              placeholderTextColor={'gray'}
+              placeholderTextColor={focusPass ? colors.primaryColor : 'gray'}
               onChangeText={textPassword => {
                 if (textPassword.trim().length == 0) {
                   setErrorPassword('*Vui lòng không để trống mật khẩu');
@@ -208,23 +234,28 @@ const LoginScreen = props => {
               }}
               name={hidePass ? 'eye-slash' : 'eye'}
               size={20}
-              color={'gray'}
+              color={focusPass ? colors.primaryColor : 'gray'}
               style={{position: 'absolute', right: 10}}
             />
+            <View
+              style={{
+                backgroundColor: focusPass ? colors.primaryColor : 'gray',
+                height: 2,
+              }}
+            />
+            {errorPassword != '' ? (
+              <Text
+                style={{
+                  color: 'red',
+                  marginLeft: 10,
+                  fontSize: fontSizes.h5,
+                }}>
+                {errorPassword}
+              </Text>
+            ) : (
+              <View />
+            )}
           </View>
-          {errorEmail != '' ? (
-            <Text
-              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
-              {errorEmail}
-            </Text>
-          ) : errorPassword != '' ? (
-            <Text
-              style={{color: 'red', fontSize: fontSizes.h4, marginLeft: 10}}>
-              {errorPassword}
-            </Text>
-          ) : (
-            <View />
-          )}
 
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
@@ -248,7 +279,13 @@ const LoginScreen = props => {
               Đăng nhập
             </Text>
           </TouchableOpacity>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View
+            style={{
+              alignSelf: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '90%',
+            }}>
             <TouchableOpacity
               onPress={() => {
                 navigate('RegisterScreen');
