@@ -59,4 +59,5 @@ export {
   GoogleAuthProvider,
   GoogleSignin,
   statusCodes,
+  getDocs,
 };

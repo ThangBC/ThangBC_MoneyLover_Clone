@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, TouchableOpacity, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
@@ -9,12 +9,16 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   GoogleSignin,
+  collection,
+  doc,
+  setDoc,
+  db,
+  getDocs,
 } from '../../../firebase/firebase';
 import Modal from 'react-native-modal';
 import {validatePassword} from '../../../utils/validations';
 
 const ProfileScreen = props => {
-  console.log(auth.currentUser?.providerData);
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 

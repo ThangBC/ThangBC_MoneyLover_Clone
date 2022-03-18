@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
@@ -12,18 +12,57 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {validateMoney} from '../../../utils/validations';
+import {
+  auth,
+  signInWithCredential,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  GoogleSignin,
+  collection,
+  doc,
+  setDoc,
+  db,
+  getDocs,
+} from '../../../firebase/firebase';
 
 const AddTransactionScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
+
+  // const [tien, setTien] = useState([]);
+  // console.log(auth.currentUser?.providerData);
+
+  // useEffect(() => {
+  //   console.log('123');
+  //   getDocs(collection(db, 'transaction')).then(snapshot => {
+  //     snapshot.docs.forEach(async doc => {
+  //       setTien({
+  //         money: doc.data().money,
+  //       });
+  //     });
+  //   });
+  // }, [tien]);
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
   const [money, setMoney] = useState('');
+  const [type, setType] = useState('Chọn nhóm');
+  const [description, setDescription] = useState('');
   const [dateText, setDateText] = useState('Chọn ngày giao dịch');
-  const [selectedLanguage, setSelectedLanguage] = useState('Chọn nhóm');
+
+  const isValid = (inputMoney, inputType, inputDes, inputDate) => {
+    if (
+      inputMoney == '' ||
+      inputType == 'Chọn nhóm' ||
+      inputDes == '' ||
+      inputDate == 'Chọn ngày giao dịch'
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -63,6 +102,10 @@ const AddTransactionScreen = props => {
           size={20}
           color={'black'}
           onPress={() => {
+            setMoney('');
+            setType('Chọn nhóm');
+            setDescription('');
+            setDateText('Chọn ngày giao dịch');
             goBack();
           }}
           style={{
@@ -80,7 +123,32 @@ const AddTransactionScreen = props => {
           }}>
           Thêm giao dịch
         </Text>
-        <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
+        <TouchableOpacity
+          disabled={isValid(money, type, description, dateText)}
+          onPress={async () => {
+            try {
+              const typeNameStr = type.slice(0, type.length - 4);
+              const typeStr = type.slice(-3);
+              const newCityRef = doc(collection(db, 'transaction'));
+              await setDoc(newCityRef, {
+                money: money,
+                type: typeStr,
+                typeName: typeNameStr,
+                description: description,
+                date: dateText,
+                createdById: auth.currentUser?.uid,
+              });
+              setMoney('');
+              setType('Chọn nhóm');
+              setDescription('');
+              setDateText('Chọn ngày giao dịch');
+              goBack();
+            } catch (error) {
+              console.log(error);
+            }
+          }}>
+          <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
+        </TouchableOpacity>
       </View>
       <View
         style={{
@@ -117,20 +185,18 @@ const AddTransactionScreen = props => {
             <Picker
               dropdownIconColor={'black'}
               style={{color: 'black'}}
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedLanguage(itemValue)
-              }>
-              <Picker.Item label="Chọn nhóm" value={'0'} />
+              selectedValue={type}
+              onValueChange={(itemValue, itemIndex) => setType(itemValue)}>
+              <Picker.Item label="Chọn nhóm" value={'Chọn nhóm'} />
               <Picker.Item label="----- Khoản chi -----" enabled={false} />
-              <Picker.Item label="Tiền xăng" value="Tiền xăng" />
-              <Picker.Item label="Tiền điện" value="Tiền điện" />
-              <Picker.Item label="Tiền nước" value="Tiền nước" />
-              <Picker.Item label="Tiền nhà" value="Tiền nhà" />
-              <Picker.Item label="Mua sắm" value="Mua sắm" />
+              <Picker.Item label="Tiền xăng" value="Tiền xăng chi" />
+              <Picker.Item label="Tiền điện" value="Tiền điện chi" />
+              <Picker.Item label="Tiền nước" value="Tiền nước chi" />
+              <Picker.Item label="Tiền nhà" value="Tiền nhà chi" />
+              <Picker.Item label="Mua sắm" value="Mua sắm chi" />
               <Picker.Item label="----- Khoản thu -----" enabled={false} />
-              <Picker.Item label="Tiền lương" value="Tiền lương" />
-              <Picker.Item label="Tiền bán đồ" value="Tiền bán đồ" />
+              <Picker.Item label="Tiền lương" value="Tiền lương thu" />
+              <Picker.Item label="Tiền bán đồ" value="Tiền bán đồ thu" />
               <Picker.Item label="Khác" value="Khác" />
             </Picker>
             <View
@@ -153,6 +219,10 @@ const AddTransactionScreen = props => {
               style={{fontSize: fontSizes.h3, color: 'black'}}
               placeholder={'Thêm ghi chú'}
               placeholderTextColor={'gray'}
+              value={description}
+              onChangeText={text => {
+                setDescription(text);
+              }}
             />
             <View
               style={{backgroundColor: colors.blurColorBlack2, height: 1}}
@@ -199,6 +269,9 @@ const AddTransactionScreen = props => {
           )}
         </View>
       </View>
+      {/* {tien.map((item, index) => {
+        <Text style={{color: 'black'}}>{item.money}</Text>;
+      })} */}
     </SafeAreaView>
   );
 };
