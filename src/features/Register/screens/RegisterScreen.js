@@ -84,9 +84,7 @@ const RegisterScreen = props => {
         <View //---------LOGIN_GOOGLE-----------
           style={{width: '70%', alignSelf: 'center', marginTop: 15}}>
           <TouchableOpacity
-            onPress={() => {
-              handleGoogleSignIn();
-            }}
+            onPress={handleGoogleSignIn}
             style={{
               flexDirection: 'row',
               borderColor: '#EB4132',
