@@ -85,6 +85,29 @@ const AddTransactionScreen = props => {
     setMode(currentMode);
   };
 
+  const handleSubmit = async () => {
+    try {
+      const typeNameStr = type.slice(0, type.length - 4);
+      const typeStr = type.slice(-3);
+      const newCityRef = doc(collection(db, 'transaction'));
+      await setDoc(newCityRef, {
+        money: money,
+        type: typeStr,
+        typeName: typeNameStr,
+        description: description,
+        date: dateText,
+        createdById: auth.currentUser?.uid,
+      });
+      setMoney('');
+      setType('Chọn nhóm');
+      setDescription('');
+      setDateText('Chọn ngày giao dịch');
+      goBack();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View //-----------HEADER----------------
@@ -125,28 +148,7 @@ const AddTransactionScreen = props => {
         </Text>
         <TouchableOpacity
           disabled={isValid(money, type, description, dateText)}
-          onPress={async () => {
-            try {
-              const typeNameStr = type.slice(0, type.length - 4);
-              const typeStr = type.slice(-3);
-              const newCityRef = doc(collection(db, 'transaction'));
-              await setDoc(newCityRef, {
-                money: money,
-                type: typeStr,
-                typeName: typeNameStr,
-                description: description,
-                date: dateText,
-                createdById: auth.currentUser?.uid,
-              });
-              setMoney('');
-              setType('Chọn nhóm');
-              setDescription('');
-              setDateText('Chọn ngày giao dịch');
-              goBack();
-            } catch (error) {
-              console.log(error);
-            }
-          }}>
+          onPress={handleSubmit}>
           <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
         </TouchableOpacity>
       </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   Text,
   View,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {colors, fontSizes} from '../../../constraints';
@@ -24,6 +26,33 @@ const HomeScreen = props => {
     {key: 'second', title: 'THÁNG NÀY'},
     {key: 'third', title: 'TƯƠNG LAI'},
   ]);
+
+  console.log(navigation.isFocused());
+
+  useEffect(() => {
+    const backAction = () => {
+      if (navigation.isFocused()) {
+        Alert.alert('Thoát', 'Bạn có chắc muốn thoát ứng dụng ?', [
+          {
+            text: 'Hủy',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {
+            text: 'Thoát',
+            onPress: () => BackHandler.exitApp(),
+          },
+        ]);
+        return true;
+      }
+    };
+    const backHandle = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandle.remove();
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View //---------------HEADER-----------------
