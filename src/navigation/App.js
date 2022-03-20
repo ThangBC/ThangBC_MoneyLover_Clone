@@ -18,7 +18,7 @@ const App = props => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="AddWalletScreen"
+        initialRouteName="HelloScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="HelloScreen" component={HelloScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
