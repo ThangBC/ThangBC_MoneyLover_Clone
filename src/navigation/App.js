@@ -7,6 +7,7 @@ import {
   RegisterScreen,
   ShowDetailTransScreen,
   EditTransactionScreen,
+  AddWalletScreen,
 } from '../features/';
 import UITab from './UITab';
 import codePush from 'react-native-code-push';
@@ -17,11 +18,12 @@ const App = props => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="HelloScreen"
+        initialRouteName="AddWalletScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="HelloScreen" component={HelloScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+        <Stack.Screen name="AddWalletScreen" component={AddWalletScreen} />
         <Stack.Screen name="UITab" component={UITab} />
         <Stack.Screen
           name="ShowDetailTransScreen"
