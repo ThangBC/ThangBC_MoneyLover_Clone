@@ -1,19 +1,26 @@
-import React, {useState} from 'react';
-import {
-  Text,
-  View,
-  useWindowDimensions,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Text, View, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import ItemExpenseTracker from './ItemExpenseTracker';
+import {auth, collection, db, getDocs} from '../../../firebase/firebase';
 
 const FirstPage = props => {
   const {navigation} = props;
   const {navigate, goBack} = navigation;
-  const [trans, setTrans] = useState([1, 2, 3, 4, 5, 6, 7]);
+
+  const [tien, setTien] = useState([]);
+  console.log(tien);
+
+  useEffect(() => {
+    getDocs(collection(db, 'transaction')).then(snapshot => {
+      snapshot.docs.forEach(async doc => {
+        if (doc.data().createdById == auth.currentUser?.uid) {
+          setTien(prev => [...prev, doc.data()]);
+        }
+      });
+    });
+  }, []);
+
   return (
     <View style={{flex: 1}}>
       <ScrollView>
@@ -91,17 +98,20 @@ const FirstPage = props => {
             </TouchableOpacity>
           </View>
         </View>
-        {trans.map((item, index) => {
-          return (
-            <ItemExpenseTracker
-              index={index}
-              key={index}
-              onPress={() => {
-                navigate('ShowDetailTransScreen');
-              }}
-            />
-          );
-        })}
+        <FlatList
+          data={tien}
+          renderItem={(index, item) => {
+            return (
+              <ItemExpenseTracker
+                index={index}
+                key={index}
+                onPress={() => {
+                  navigate('ShowDetailTransScreen');
+                }}
+              />
+            );
+          }}
+        />
       </ScrollView>
     </View>
   );
