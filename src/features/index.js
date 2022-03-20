@@ -6,6 +6,7 @@ import AddTransactionScreen from './Transaction/screens/AddTransactionScreen';
 import ShowDetailTransScreen from './Transaction/screens/ShowDetailTransScreen';
 import EditTransactionScreen from './Transaction/screens/EditTransactionScreen';
 import ProfileScreen from './Profile/screens/ProfileScreen';
+import AddWalletScreen from './Wallet/screens/AddWalletScreen';
 
 export {
   HelloScreen,
@@ -16,4 +17,5 @@ export {
   ProfileScreen,
   ShowDetailTransScreen,
   EditTransactionScreen,
+  AddWalletScreen,
 };
