@@ -11,7 +11,8 @@ import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
-import {validateMoney} from '../../../utils/validations';
+import {validateMoney, validateCurrentDate} from '../../../utils/validations';
+import {isValidAddTransaction} from '../components/validatitonTransaction';
 import {
   auth,
   signInWithCredential,
@@ -35,19 +36,16 @@ const AddTransactionScreen = props => {
 
   const [money, setMoney] = useState('');
   const [type, setType] = useState('Chọn nhóm');
-  const [description, setDescription] = useState('');
-  const [dateText, setDateText] = useState('Chọn ngày giao dịch');
+  const [description, setDescription] = useState('Không có ghi chú!');
+  const [dateText, setDateText] = useState(() => {
+    return validateCurrentDate(new Date());
+  });
 
-  const isValid = (inputMoney, inputType, inputDes, inputDate) => {
-    if (
-      inputMoney == '' ||
-      inputType == 'Chọn nhóm' ||
-      inputDes == '' ||
-      inputDate == 'Chọn ngày giao dịch'
-    ) {
-      return true;
-    }
-    return false;
+  const setDefaultValue = () => {
+    setMoney('');
+    setType('Chọn nhóm');
+    setDescription('Không có ghi chú');
+    setDateText(validateCurrentDate(new Date()));
   };
 
   const onChange = (event, selectedDate) => {
@@ -55,12 +53,7 @@ const AddTransactionScreen = props => {
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
     let tempDate = new Date(currentDate);
-    let fDate =
-      tempDate.getDate() +
-      '/' +
-      (tempDate.getMonth() + 1) +
-      '/' +
-      tempDate.getFullYear();
+    let fDate = validateCurrentDate(tempDate);
     if (event.type !== 'dismissed') {
       setDateText(fDate);
     }
@@ -84,10 +77,7 @@ const AddTransactionScreen = props => {
         date: dateText,
         createdById: auth.currentUser?.uid,
       });
-      setMoney('');
-      setType('Chọn nhóm');
-      setDescription('');
-      setDateText('Chọn ngày giao dịch');
+      setDefaultValue();
       goBack();
     } catch (error) {
       console.log(error);
@@ -111,10 +101,7 @@ const AddTransactionScreen = props => {
           size={20}
           color={'black'}
           onPress={() => {
-            setMoney('');
-            setType('Chọn nhóm');
-            setDescription('');
-            setDateText('Chọn ngày giao dịch');
+            setDefaultValue();
             goBack();
           }}
           style={{
@@ -133,7 +120,7 @@ const AddTransactionScreen = props => {
           Thêm giao dịch
         </Text>
         <TouchableOpacity
-          disabled={isValid(money, type, description, dateText)}
+          disabled={isValidAddTransaction(money, type, dateText)}
           onPress={handleSubmit}>
           <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
         </TouchableOpacity>
@@ -205,9 +192,8 @@ const AddTransactionScreen = props => {
             <TextInput
               maxLength={50}
               style={{fontSize: fontSizes.h3, color: 'black'}}
-              placeholder={'Thêm ghi chú'}
+              placeholder={'Thêm ghi chú (không bắt buộc)'}
               placeholderTextColor={'gray'}
-              value={description}
               onChangeText={text => {
                 setDescription(text);
               }}
@@ -238,7 +224,9 @@ const AddTransactionScreen = props => {
                   marginVertical: 10,
                   marginHorizontal: 5,
                 }}>
-                {dateText}
+                {dateText === validateCurrentDate(new Date())
+                  ? 'Hôm nay'
+                  : dateText}
               </Text>
             </TouchableOpacity>
             <View
@@ -257,9 +245,6 @@ const AddTransactionScreen = props => {
           )}
         </View>
       </View>
-      {/* {tien.map((item, index) => {
-        <Text style={{color: 'black'}}>{item.money}</Text>;
-      })} */}
     </SafeAreaView>
   );
 };

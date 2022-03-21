@@ -10,4 +10,15 @@ const validateMoney = textInputMoney => {
   return /^\d+$/.test(textInputMoney);
 };
 
-export {validateEmail, validatePassword, validateMoney};
+const validateCurrentDate = textInputDate => {
+  console.log(textInputDate);
+  return (
+    textInputDate.getDate() +
+    '/' +
+    (textInputDate.getMonth() + 1) +
+    '/' +
+    textInputDate.getFullYear()
+  );
+};
+
+export {validateEmail, validatePassword, validateMoney, validateCurrentDate};
