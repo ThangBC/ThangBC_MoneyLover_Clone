@@ -29,20 +29,6 @@ const AddTransactionScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
 
-  // const [tien, setTien] = useState([]);
-  // console.log(auth.currentUser?.providerData);
-
-  // useEffect(() => {
-  //   console.log('123');
-  //   getDocs(collection(db, 'transaction')).then(snapshot => {
-  //     snapshot.docs.forEach(async doc => {
-  //       setTien({
-  //         money: doc.data().money,
-  //       });
-  //     });
-  //   });
-  // }, [tien]);
-
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);

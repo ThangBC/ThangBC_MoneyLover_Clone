@@ -27,7 +27,7 @@ const HomeScreen = props => {
     {key: 'third', title: 'TƯƠNG LAI'},
   ]);
 
-  console.log(navigation.isFocused());
+  // console.log(navigation.isFocused());
 
   useEffect(() => {
     const backAction = () => {

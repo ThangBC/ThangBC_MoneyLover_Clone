@@ -10,7 +10,7 @@ import {
 import {colors, fontSizes} from '../../../constraints';
 
 const ItemExpenseTracker = props => {
-  const {index, onPress} = props;
+  const {index, onPress, item} = props;
   return (
     <TouchableOpacity onPress={onPress}>
       <View>
