@@ -68,8 +68,8 @@ const AddTransactionScreen = props => {
     try {
       const typeNameStr = type.slice(0, type.length - 4);
       const typeStr = type.slice(-3);
-      const newCityRef = doc(collection(db, 'transaction'));
-      await setDoc(newCityRef, {
+      const newTrans = doc(collection(db, 'transaction'));
+      await setDoc(newTrans, {
         money: money,
         type: typeStr,
         typeName: typeNameStr,
