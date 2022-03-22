@@ -40,30 +40,25 @@ const RegisterScreen = props => {
 
       const googleCredential = GoogleAuthProvider.credential(idToken);
 
-      const res = signInWithCredential(auth, googleCredential);
-      res
-        .then(user => {
-          navigate('UITab');
-        })
-        .catch(err => {
-          alert(err.message);
-        });
+      // navigate('AddWalletScreen', {
+      //   googleCredential: googleCredential,
+      // });
+
+      console.log((await signInWithCredential(auth, googleCredential)).user);
+
+      // const res = signInWithCredential(auth, googleCredential);
+      // res
+      //   .then(user => {
+      //     navigate('UITab');
+      //   })
+      //   .catch(err => {
+      //     alert(err.message);
+      //   });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleRegister = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async userCredentials => {
-        const user = userCredentials.user;
-        console.log(userCredentials);
-        navigate('UITab');
-      })
-      .catch(err => {
-        alert(err.message);
-      });
-  };
   return (
     <SafeAreaView style={{flex: 1, padding: 10}}>
       <ScrollView>
@@ -258,7 +253,9 @@ const RegisterScreen = props => {
 
           <TouchableOpacity
             disabled={email != '' && password != '' ? false : true}
-            onPress={handleRegister}
+            onPress={() => {
+              navigate('AddWalletScreen', {email: email, password: password});
+            }}
             style={{
               backgroundColor:
                 email != '' && password != ''

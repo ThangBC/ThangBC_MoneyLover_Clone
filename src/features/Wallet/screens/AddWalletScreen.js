@@ -8,15 +8,72 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints/';
-import {validateMoney, validatePassword} from '../../../utils/validations';
+import {validateMoney, validateCurrentDate} from '../../../utils/validations';
+import {
+  auth,
+  signInWithCredential,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  GoogleSignin,
+  collection,
+  doc,
+  setDoc,
+  db,
+} from '../../../firebase/firebase';
 
 const AddWalletScreen = props => {
+  const {navigation, route} = props;
+  const {navigate, goBack} = navigation;
+
+  const {email, password, googleCredential} = route.params;
+
+  console.log(googleCredential);
+
   const [nameWallet, setNameWallet] = useState('');
   const [currentMoney, setCurrentMoney] = useState('');
 
   const [focusNameWallet, setFocusNameWallet] = useState(false);
   const [focusCurrentMoney, setFocusCurrentMoney] = useState(false);
   const [errorNameWallet, setErrorNameWallet] = useState('');
+
+  const addFirestore = async user => {
+    const getIndex = user.email.indexOf('@');
+    const displayName = user.email.substring(0, getIndex).toUpperCase();
+    const newUser = doc(collection(db, 'users'));
+    await setDoc(newUser, {
+      id: user.uid,
+      email: user.email,
+      name: displayName,
+      accountType: user.providerData[0].providerId,
+      walletName: nameWallet,
+      moneyTotal: currentMoney,
+      createdAt: validateCurrentDate(new Date()),
+    });
+    navigate('UITab');
+  };
+
+  const handleRegister = () => {
+    if (googleCredential != undefined) {
+      const res = signInWithCredential(auth, googleCredential);
+      res
+        .then(userCredentials => {
+          const user = userCredentials.user;
+          addFirestore(user);
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    } else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredentials => {
+          const user = userCredentials.user;
+          addFirestore(user);
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    }
+  };
 
   return (
     <View
@@ -60,8 +117,6 @@ const AddWalletScreen = props => {
           onChangeText={text => {
             if (text.trim().length < 6 || text.trim().length > 20) {
               setErrorNameWallet('*Vui lòng nhập tên ví 6-20 ký tự');
-            } else if (validatePassword(text)) {
-              setErrorNameWallet('*Vui lòng không nhập ký tự đặc biệt');
             } else {
               setErrorNameWallet('');
               setNameWallet(text);
@@ -125,6 +180,7 @@ const AddWalletScreen = props => {
 
       <View style={{alignItems: 'center'}}>
         <TouchableOpacity
+          onPress={handleRegister}
           disabled={nameWallet != '' && currentMoney != '' ? false : true}
           style={{
             backgroundColor: colors.blurColorBlack,
