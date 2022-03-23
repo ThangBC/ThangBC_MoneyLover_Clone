@@ -24,6 +24,7 @@ import {
   setDoc,
   onSnapshot,
   initializeFirestore,
+  getDoc,
 } from 'firebase/firestore';
 
 import {
@@ -72,4 +73,5 @@ export {
   query,
   where,
   onSnapshot,
+  getDoc,
 };

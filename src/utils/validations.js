@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 const validateEmail = textInputEmail => {
   return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(textInputEmail);
 };
@@ -11,14 +13,7 @@ const validateMoney = textInputMoney => {
 };
 
 const validateCurrentDate = textInputDate => {
-  console.log(textInputDate);
-  return (
-    textInputDate.getDate() +
-    '/' +
-    (textInputDate.getMonth() + 1) +
-    '/' +
-    textInputDate.getFullYear()
-  );
+  return moment(textInputDate).format('DD/MM/YYYY');
 };
 
 export {validateEmail, validatePassword, validateMoney, validateCurrentDate};

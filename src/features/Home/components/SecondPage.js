@@ -13,7 +13,6 @@ import ItemExpenseTracker from './ItemExpenseTracker';
 const SecondPage = props => {
   const {navigation} = props;
   const {navigate, goBack} = navigation;
-  const [trans, setTrans] = useState([1, 2, 3, 4]);
   return (
     <View style={{flex: 1}}>
       <ScrollView>
@@ -91,17 +90,6 @@ const SecondPage = props => {
             </TouchableOpacity>
           </View>
         </View>
-        {trans.map((item, index) => {
-          return (
-            <ItemExpenseTracker
-              index={index}
-              key={index}
-              onPress={() => {
-                navigate('ShowDetailTransScreen');
-              }}
-            />
-          );
-        })}
       </ScrollView>
     </View>
   );
