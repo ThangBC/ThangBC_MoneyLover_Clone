@@ -13,12 +13,11 @@ import {
   auth,
   signInWithCredential,
   createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  GoogleSignin,
   collection,
   doc,
   setDoc,
   db,
+  addDoc,
 } from '../../../firebase/firebase';
 
 const AddWalletScreen = props => {
@@ -36,11 +35,11 @@ const AddWalletScreen = props => {
   const [focusCurrentMoney, setFocusCurrentMoney] = useState(false);
   const [errorNameWallet, setErrorNameWallet] = useState('');
 
-  const addFirestore = async user => {
+  const addFirestore = user => {
     const getIndex = user.email.indexOf('@');
     const displayName = user.email.substring(0, getIndex).toUpperCase();
-    const newUser = doc(collection(db, 'users'));
-    await setDoc(newUser, {
+    const userCollRef = collection(db, 'users');
+    addDoc(userCollRef, {
       id: user.uid,
       email: user.email,
       name: displayName,
@@ -48,8 +47,24 @@ const AddWalletScreen = props => {
       walletName: nameWallet,
       moneyTotal: currentMoney,
       createdAt: validateCurrentDate(new Date()),
-    });
-    navigate('UITab');
+    })
+      .then(res => {
+        navigate('UITab');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    // const newUser = doc(collection(db, 'users'));
+    // await setDoc(newUser, {
+    //   id: user.uid,
+    //   email: user.email,
+    //   name: displayName,
+    //   accountType: user.providerData[0].providerId,
+    //   walletName: nameWallet,
+    //   moneyTotal: currentMoney,
+    //   createdAt: validateCurrentDate(new Date()),
+    // });
+    // navigate('UITab');
   };
 
   const handleRegister = () => {

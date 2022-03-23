@@ -13,18 +13,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {validateMoney, validateCurrentDate} from '../../../utils/validations';
 import {isValidAddTransaction} from '../components/validatitonTransaction';
-import {
-  auth,
-  signInWithCredential,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  GoogleSignin,
-  collection,
-  doc,
-  setDoc,
-  db,
-  getDocs,
-} from '../../../firebase/firebase';
+import {auth, addDoc, collection, db} from '../../../firebase/firebase';
 
 const AddTransactionScreen = props => {
   const {navigation, route} = props;
@@ -68,17 +57,31 @@ const AddTransactionScreen = props => {
     try {
       const typeNameStr = type.slice(0, type.length - 4);
       const typeStr = type.slice(-3);
-      const newTrans = doc(collection(db, 'transaction'));
-      await setDoc(newTrans, {
+      // const newTrans = doc(collection(db, 'transaction'));
+      // await setDoc(newTrans, {
+      //   money: money,
+      //   type: typeStr,
+      //   typeName: typeNameStr,
+      //   description: description,
+      //   date: dateText,
+      //   createdById: auth.currentUser?.uid,
+      // });
+      const transCollRef = collection(db, 'transaction');
+      addDoc(transCollRef, {
         money: money,
         type: typeStr,
         typeName: typeNameStr,
         description: description,
         date: dateText,
         createdById: auth.currentUser?.uid,
-      });
-      setDefaultValue();
-      goBack();
+      })
+        .then(res => {
+          setDefaultValue();
+          goBack();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     } catch (error) {
       console.log(error);
     }
