@@ -22,7 +22,7 @@
     "@react-navigation/native-stack": "^6.5.0",
     "@remobile/react-native-marquee-label": "^1.0.4",
     "appcenter-cli": "^2.10.8",
-    "firebase": "^9.6.8",
+    "firebase": "^9.6.9",
     "react": "17.0.2",
     "react-native": "0.67.3",
     "react-native-code-push": "^7.0.4",

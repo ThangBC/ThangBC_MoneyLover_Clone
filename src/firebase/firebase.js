@@ -12,14 +12,20 @@ import {
   EmailAuthProvider,
   GoogleAuthProvider,
 } from 'firebase/auth';
+
 import {
   getFirestore,
-  collection,
   getDocs,
+  query,
+  where,
+  collection,
   addDoc,
   doc,
   setDoc,
-} from 'firebase/firestore/lite';
+  onSnapshot,
+  initializeFirestore,
+} from 'firebase/firestore';
+
 import {
   GoogleSignin,
   statusCodes,
@@ -36,7 +42,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore();
+const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+});
+
 GoogleSignin.configure({
   webClientId:
     '875900993588-22qae3bave9nctig8q4f5bvbchns81s9.apps.googleusercontent.com',
@@ -60,4 +69,7 @@ export {
   GoogleSignin,
   statusCodes,
   getDocs,
+  query,
+  where,
+  onSnapshot,
 };

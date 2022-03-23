@@ -2,7 +2,18 @@ import React, {useState, useEffect} from 'react';
 import {Text, View, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import ItemExpenseTracker from './ItemExpenseTracker';
-import {auth, collection, db, getDocs} from '../../../firebase/firebase';
+import {
+  auth,
+  collection,
+  db,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+} from '../../../firebase/firebase';
+// import {getFirestore, onSnapshot} from 'firebase/firestore';
+
+// const dbb = getFirestore();
 
 const FirstPage = props => {
   const {navigation} = props;
@@ -12,16 +23,40 @@ const FirstPage = props => {
   console.log(`Kết quả ${JSON.stringify(tien)}`);
 
   useEffect(() => {
-    const getList = async () => {
-      const data = await getDocs(collection(db, 'transaction'));
-      const result = data.docs.map(detail => ({
-        ...detail.data(),
-        id: detail.id,
-      }));
-      setTien(result);
+    // const getList = async () => {
+    //   const result = [];
+    //   const q = query(
+    //     collection(db, 'transaction'),
+    //     where('createdById', '==', auth.currentUser?.uid),
+    //   );
+    //   // onSnapshot(q, querySnapshot => {
+    //   //   querySnapshot.forEach(doc => {
+    //   //     console.log(JSON.stringify(doc.data()));
+    //   //     result.push({...doc.data(), id: doc.id});
+    //   //     setTien(result);
+    //   //   });
+    //   // });
+    //   const querySnapshot = await getDocs(q);
+    //   querySnapshot.forEach(doc => {
+    //     result.push({...doc.data(), id: doc.id});
+    //   });
+    //   console.log(result);
+    //   setTien(result);
+    // };
+    // getList();
+    const unsubcribe = onSnapshot(collection(db, 'transaction'), snapshot => {
+      const result = [];
+      snapshot.docs.map(doc => {
+        if (doc.data().createdById == auth.currentUser?.uid) {
+          result.push({...doc.data(), id: doc.id});
+        }
+      }),
+        setTien(result);
+    });
+    return () => {
+      unsubcribe();
     };
-    getList();
-  }, [db]);
+  }, []);
 
   return (
     <View style={{flex: 1}}>
