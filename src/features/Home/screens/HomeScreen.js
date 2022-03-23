@@ -1,11 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
   useWindowDimensions,
   Image,
-  TouchableOpacity,
-  ScrollView,
   SafeAreaView,
   BackHandler,
   Alert,
@@ -13,21 +11,31 @@ import {
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import {FirstPage, SecondPage, ThirdPage} from '..';
+import {FirstPage, SecondPage, ThirdPage} from '../';
+import {
+  auth,
+  collection,
+  db,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+} from '../../../firebase/firebase';
 
 const HomeScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
   const layout = useWindowDimensions();
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = useState(0);
+  const [user, setUser] = useState({});
 
-  const [routes] = React.useState([
+  console.log(`Người dùng:  ${JSON.stringify(user)}`);
+
+  const [routes] = useState([
     {key: 'first', title: 'CÁC THÁNG TRƯỚC'},
     {key: 'second', title: 'THÁNG NÀY'},
     {key: 'third', title: 'TƯƠNG LAI'},
   ]);
-
-  // console.log(navigation.isFocused());
 
   useEffect(() => {
     const backAction = () => {
@@ -53,6 +61,24 @@ const HomeScreen = props => {
     return () => backHandle.remove();
   }, []);
 
+  useEffect(() => {
+    const q = query(
+      collection(db, 'users'),
+      where('id', '==', auth.currentUser?.uid),
+    );
+    const unsubcribe = onSnapshot(q, snapshot => {
+      const infor = new Object();
+      snapshot.docs.map(doc => {
+        infor.nameWallet = doc.data().walletName;
+        infor.totalMoney = doc.data().moneyTotal;
+      });
+      setUser(infor);
+    });
+    return () => {
+      unsubcribe();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View //---------------HEADER-----------------
@@ -76,7 +102,7 @@ const HomeScreen = props => {
             flexDirection: 'column',
             flex: 0.7,
           }}>
-          <Text style={{color: 'gray'}}>Tiền mặt</Text>
+          <Text style={{color: 'gray'}}>{user.nameWallet}</Text>
           <Text
             style={{
               color: 'black',
@@ -84,8 +110,7 @@ const HomeScreen = props => {
               fontWeight: 'bold',
             }}
             numberOfLines={1}>
-            999,999,999,999
-            <Text style={{textDecorationLine: 'underline'}}> đ</Text>
+            {user.totalMoney} ₫
           </Text>
         </View>
         <View

@@ -1,18 +1,32 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  useWindowDimensions,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {Text, View, TouchableOpacity} from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
+import {validateCurrentDate} from '../../../utils/validations';
 
 const ItemExpenseTracker = props => {
-  const {index, onPress, item} = props;
+  const {index, item} = props;
+  console.log(`item: ${JSON.stringify(item)}`);
+
+  const convertDate = () => {
+    return item.date.slice(0, 2);
+  };
+  const convertMonth = () => {
+    return item.date.slice(3, -5);
+  };
+  const convertYear = () => {
+    return item.date.slice(-4);
+  };
+
+  const convertDay = () => {
+    return item.date == validateCurrentDate(new Date())
+      ? 'Hôm nay'
+      : item.date > validateCurrentDate(new Date())
+      ? 'Tương lai'
+      : 'Các ngày trước';
+  };
+
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity disabled={true}>
       <View>
         <View
           style={{
@@ -23,13 +37,18 @@ const ItemExpenseTracker = props => {
             elevation: 2,
           }}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{color: 'black', fontSize: fontSizes.h1}}>02</Text>
+            <Text style={{color: 'black', fontSize: fontSizes.h1}}>
+              {convertDate()}
+            </Text>
             <View style={{flex: 1, marginLeft: 10}}>
-              <Text style={{color: 'black'}}>Hôm nay</Text>
-              <Text style={{color: 'gray'}}>tháng 3 2022</Text>
+              <Text style={{color: 'black'}}>{convertDay()}</Text>
+              <Text style={{color: 'gray'}}>
+                tháng {convertMonth()} {convertYear()}
+              </Text>
             </View>
             <Text style={{color: 'black', fontSize: fontSizes.h3}}>
-              -2,000,000
+              {item.type == 'chi' ? '-' : '+'}
+              {item.money}₫
             </Text>
           </View>
           <View
@@ -47,15 +66,16 @@ const ItemExpenseTracker = props => {
               justifyContent: 'space-between',
             }}>
             <Text style={{color: 'black', fontSize: fontSizes.h3, flex: 1}}>
-              Sửa trang trí nhà
+              {item.typeName}
             </Text>
             <Text
               style={{
-                color: colors.spentColor,
+                color:
+                  item.type == 'chi' ? colors.spentColor : colors.collectColor,
                 fontSize: fontSizes.h3,
                 marginLeft: 10,
               }}>
-              2,000,000
+              {item.money}
             </Text>
           </View>
         </View>

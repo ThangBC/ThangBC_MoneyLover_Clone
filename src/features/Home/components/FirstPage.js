@@ -11,47 +11,55 @@ import {
   getDocs,
   onSnapshot,
 } from '../../../firebase/firebase';
-// import {getFirestore, onSnapshot} from 'firebase/firestore';
-
-// const dbb = getFirestore();
 
 const FirstPage = props => {
   const {navigation} = props;
   const {navigate, goBack} = navigation;
 
-  const [tien, setTien] = useState([]);
-  console.log(`Kết quả ${JSON.stringify(tien)}`);
+  const [trans, setTrans] = useState([]);
+  const [totalCollect, setTotalCollect] = useState([]);
+  const [totalSpent, setTotalSpent] = useState([]);
+  console.log(`Kết quả ${JSON.stringify(trans)}`);
+
+  const handleTotalCollect = () => {
+    let sum = 0;
+    totalCollect.forEach(collect => {
+      sum += parseInt(collect);
+    });
+    return sum;
+  };
+
+  const handleTotalSpend = () => {
+    let minus = 0;
+    totalSpent.forEach(spent => {
+      minus += parseInt(spent);
+    });
+    return minus;
+  };
 
   useEffect(() => {
-    // const getList = async () => {
-    //   const result = [];
-    //   const q = query(
-    //     collection(db, 'transaction'),
-    //     where('createdById', '==', auth.currentUser?.uid),
-    //   );
-    //   // onSnapshot(q, querySnapshot => {
-    //   //   querySnapshot.forEach(doc => {
-    //   //     console.log(JSON.stringify(doc.data()));
-    //   //     result.push({...doc.data(), id: doc.id});
-    //   //     setTien(result);
-    //   //   });
-    //   // });
-    //   const querySnapshot = await getDocs(q);
-    //   querySnapshot.forEach(doc => {
-    //     result.push({...doc.data(), id: doc.id});
-    //   });
-    //   console.log(result);
-    //   setTien(result);
-    // };
-    // getList();
-    const unsubcribe = onSnapshot(collection(db, 'transaction'), snapshot => {
-      const result = [];
+    const q = query(
+      collection(db, 'transaction'),
+      where('createdById', '==', auth.currentUser?.uid),
+    );
+    const unsubcribe = onSnapshot(q, snapshot => {
+      const collect = [];
+      const spent = [];
+      setTrans(snapshot.docs.map(doc => doc.data()));
+
       snapshot.docs.map(doc => {
-        if (doc.data().createdById == auth.currentUser?.uid) {
-          result.push({...doc.data(), id: doc.id});
+        if (doc.data().type == 'thu') {
+          collect.push(doc.data().money);
         }
-      }),
-        setTien(result);
+      });
+      setTotalCollect(collect);
+
+      snapshot.docs.map(doc => {
+        if (doc.data().type == 'chi') {
+          spent.push(doc.data().money);
+        }
+      });
+      setTotalSpent(spent);
     });
     return () => {
       unsubcribe();
@@ -74,7 +82,7 @@ const FirstPage = props => {
               fontSize: fontSizes.h3,
               fontWeight: 'bold',
             }}>
-            20,000,000
+            {handleTotalCollect()}₫
           </Text>
         </View>
         <View
@@ -90,7 +98,7 @@ const FirstPage = props => {
               fontSize: fontSizes.h3,
               fontWeight: 'bold',
             }}>
-            2,000,000
+            {handleTotalSpend()}₫
           </Text>
         </View>
         <View
@@ -109,7 +117,7 @@ const FirstPage = props => {
             alignSelf: 'flex-end',
             marginTop: 5,
           }}>
-          18,000,000
+          {handleTotalCollect() - handleTotalSpend()}₫
         </Text>
         <View
           style={{flexDirection: 'row', alignSelf: 'center', marginTop: 20}}>
@@ -133,19 +141,11 @@ const FirstPage = props => {
         </View>
       </View>
       <FlatList
-        data={tien}
-        renderItem={({item, index}) => {
-          return (
-            <ItemExpenseTracker
-              item={item}
-              index={index}
-              key={index}
-              onPress={() => {
-                navigate('ShowDetailTransScreen');
-              }}
-            />
-          );
-        }}
+        data={trans}
+        keyExtractor={item => item.id}
+        renderItem={({item, index}) => (
+          <ItemExpenseTracker item={item} index={index} key={item.id} />
+        )}
       />
     </View>
   );

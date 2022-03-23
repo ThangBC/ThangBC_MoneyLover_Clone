@@ -13,7 +13,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {validateMoney, validateCurrentDate} from '../../../utils/validations';
 import {isValidAddTransaction} from '../components/validatitonTransaction';
-import {auth, addDoc, collection, db} from '../../../firebase/firebase';
+import moment from 'moment';
+import {
+  auth,
+  addDoc,
+  collection,
+  db,
+  doc,
+  setDoc,
+} from '../../../firebase/firebase';
 
 const AddTransactionScreen = props => {
   const {navigation, route} = props;
@@ -26,9 +34,7 @@ const AddTransactionScreen = props => {
   const [money, setMoney] = useState('');
   const [type, setType] = useState('Chọn nhóm');
   const [description, setDescription] = useState('Không có ghi chú!');
-  const [dateText, setDateText] = useState(() => {
-    return validateCurrentDate(new Date());
-  });
+  const [dateText, setDateText] = useState(validateCurrentDate(new Date()));
 
   const setDefaultValue = () => {
     setMoney('');
@@ -57,31 +63,19 @@ const AddTransactionScreen = props => {
     try {
       const typeNameStr = type.slice(0, type.length - 4);
       const typeStr = type.slice(-3);
-      // const newTrans = doc(collection(db, 'transaction'));
-      // await setDoc(newTrans, {
-      //   money: money,
-      //   type: typeStr,
-      //   typeName: typeNameStr,
-      //   description: description,
-      //   date: dateText,
-      //   createdById: auth.currentUser?.uid,
-      // });
-      const transCollRef = collection(db, 'transaction');
-      addDoc(transCollRef, {
+
+      const transCollRef = doc(collection(db, 'transaction'));
+      await setDoc(transCollRef, {
+        id: transCollRef.id,
         money: money,
         type: typeStr,
         typeName: typeNameStr,
         description: description,
         date: dateText,
         createdById: auth.currentUser?.uid,
-      })
-        .then(res => {
-          setDefaultValue();
-          goBack();
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      });
+      setDefaultValue();
+      goBack();
     } catch (error) {
       console.log(error);
     }
@@ -175,7 +169,7 @@ const AddTransactionScreen = props => {
               <Picker.Item label="----- Khoản thu -----" enabled={false} />
               <Picker.Item label="Tiền lương" value="Tiền lương thu" />
               <Picker.Item label="Tiền bán đồ" value="Tiền bán đồ thu" />
-              <Picker.Item label="Khác" value="Khác" />
+              <Picker.Item label="Khác" value="Khác thu" />
             </Picker>
             <View
               style={{backgroundColor: colors.blurColorBlack2, height: 1}}
@@ -238,6 +232,7 @@ const AddTransactionScreen = props => {
           </View>
           {show && (
             <DateTimePicker
+              format={'DD/MM/YYYY'}
               testID="dateTimePicker"
               value={date}
               mode={mode}
