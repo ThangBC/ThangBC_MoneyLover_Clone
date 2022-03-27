@@ -13,15 +13,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {validateMoney, validateCurrentDate} from '../../../utils/validations';
 import {isValidAddTransaction} from '../components/validatitonTransaction';
-import moment from 'moment';
 import {
   auth,
-  addDoc,
   collection,
   db,
   doc,
   setDoc,
+  updateDoc,
 } from '../../../firebase/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddTransactionScreen = props => {
   const {navigation, route} = props;
@@ -74,6 +74,16 @@ const AddTransactionScreen = props => {
         date: dateText,
         createdById: auth.currentUser?.uid,
       });
+      const valUserId = await AsyncStorage.getItem('userId');
+      const valMoneyTotal = await AsyncStorage.getItem('moneyTotal');
+      const userRef = doc(db, 'users', valUserId);
+      await updateDoc(userRef, {
+        moneyTotal:
+          typeStr == 'thu'
+            ? parseInt(valMoneyTotal) + parseInt(money)
+            : parseInt(valMoneyTotal) - parseInt(money),
+        updatedAt: validateCurrentDate(new Date()),
+      });
       setDefaultValue();
       goBack();
     } catch (error) {
@@ -117,7 +127,7 @@ const AddTransactionScreen = props => {
           Thêm giao dịch
         </Text>
         <TouchableOpacity
-          disabled={isValidAddTransaction(money, type, dateText)}
+          disabled={isValidAddTransaction(money, type)}
           onPress={handleSubmit}>
           <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
         </TouchableOpacity>
@@ -134,6 +144,7 @@ const AddTransactionScreen = props => {
           <View style={{flex: 0.1}} />
           <View style={{flexDirection: 'column', flex: 0.9}}>
             <TextInput
+              maxLength={10}
               style={{fontSize: fontSizes.h2, color: 'black'}}
               placeholder={'0 đ'}
               keyboardType={'numeric'}

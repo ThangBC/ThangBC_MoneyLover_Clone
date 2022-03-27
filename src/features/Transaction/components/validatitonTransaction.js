@@ -1,5 +1,5 @@
-const isValidAddTransaction = (money, type, dateText) => {
-  if (money == '' || type == 'Chọn nhóm' || dateText == 'Chọn ngày giao dịch') {
+const isValidAddTransaction = (money, type) => {
+  if (money == '' || type == 'Chọn nhóm') {
     return true;
   }
   return false;
