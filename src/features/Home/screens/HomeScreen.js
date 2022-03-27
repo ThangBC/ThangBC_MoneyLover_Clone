@@ -7,9 +7,10 @@ import {
   SafeAreaView,
   BackHandler,
   Alert,
+  StyleSheet,
 } from 'react-native';
-import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import {colors, fontSizes} from '../../../constraints';
+import {TabView, TabBar} from 'react-native-tab-view';
+import {fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {FirstPage, SecondPage, ThirdPage} from '../';
 import {
@@ -18,7 +19,6 @@ import {
   db,
   query,
   where,
-  getDocs,
   onSnapshot,
 } from '../../../firebase/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,11 +26,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const HomeScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
+
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [user, setUser] = useState({});
-
-  console.log(`Người dùng:  ${JSON.stringify(user)}`);
 
   const [routes] = useState([
     {key: 'first', title: 'CÁC THÁNG TRƯỚC'},
@@ -38,6 +37,7 @@ const HomeScreen = props => {
     {key: 'third', title: 'TƯƠNG LAI'},
   ]);
 
+  //---------------- Hardware Back Button -----------------
   useEffect(() => {
     const backAction = () => {
       if (navigation.isFocused()) {
@@ -62,6 +62,7 @@ const HomeScreen = props => {
     return () => backHandle.remove();
   }, []);
 
+  //--------------------- GET USER ------------------------
   useEffect(() => {
     const q = query(
       collection(db, 'users'),
@@ -91,52 +92,30 @@ const HomeScreen = props => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.container}>
       <View //---------------HEADER-----------------
-        style={{
-          flexDirection: 'row',
-          height: 55,
-          alignItems: 'center',
-          paddingHorizontal: 15,
-          justifyContent: 'space-between',
-          backgroundColor: 'white',
-        }}>
-        <View style={{flex: 0.15}}>
+        style={styles.headerView}>
+        <View style={styles.imgView}>
           <Image
             source={require('../../../assets/wallet_icon.png')}
-            style={{width: 35, height: 35}}
+            style={styles.imgIcon}
           />
         </View>
 
-        <View
-          style={{
-            flexDirection: 'column',
-            flex: 0.7,
-          }}>
-          <Text style={{color: 'gray'}}>{user.nameWallet}</Text>
-          <Text
-            style={{
-              color: 'black',
-              fontSize: fontSizes.h3,
-              fontWeight: 'bold',
-            }}
-            numberOfLines={1}>
+        <View style={styles.totalMoneyView}>
+          <Text style={styles.totalMoneyText}>{user.nameWallet}</Text>
+          <Text style={styles.totalMoney} numberOfLines={1}>
             {user.totalMoney} ₫
           </Text>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            flex: 0.15,
-            justifyContent: 'space-between',
-          }}>
+        <View style={styles.iconRightView}>
           <Icon name="bell" size={25} color="black" />
           <Icon name="ellipsis-v" size={25} color="black" />
         </View>
       </View>
 
       <TabView
-        style={{flex: 1}}
+        style={styles.tabView}
         navigationState={{index, routes}}
         renderScene={({route, jumpTo}) => {
           switch (route.key) {
@@ -157,10 +136,10 @@ const HomeScreen = props => {
             {...props}
             renderLabel={({route, color, focused}) => (
               <Text
-                style={{
-                  color: focused ? 'black' : 'gray',
-                  textAlign: 'center',
-                }}>
+                style={[
+                  styles.tabBarText,
+                  {color: focused ? 'black' : 'gray'},
+                ]}>
                 {route.title}
               </Text>
             )}
@@ -168,12 +147,46 @@ const HomeScreen = props => {
               backgroundColor: 'black',
               height: 1,
             }}
-            style={{backgroundColor: 'white'}}
+            style={styles.tabBar}
           />
         )}
       />
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+  headerView: {
+    flexDirection: 'row',
+    height: 55,
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+  },
+  imgIconView: {flex: 0.15},
+  imgIcon: {width: 35, height: 35},
+  totalMoneyView: {
+    flexDirection: 'column',
+    flex: 0.7,
+  },
+  totalMoneyText: {color: 'gray'},
+  totalMoney: {
+    color: 'black',
+    fontSize: fontSizes.h3,
+    fontWeight: 'bold',
+  },
+  iconRightView: {
+    flexDirection: 'row',
+    flex: 0.15,
+    justifyContent: 'space-between',
+  },
+  tabView: {flex: 1},
+  tabBarText: {
+    textAlign: 'center',
+  },
+  tabBar: {backgroundColor: 'white'},
+});
 
 export default HomeScreen;

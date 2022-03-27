@@ -17,7 +17,7 @@ const ShowDetailTransScreen = props => {
   const {navigate, goBack} = navigation;
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View //-----------HEADER----------------
+      {/* <View //-----------HEADER----------------
         style={{
           height: 55,
           flexDirection: 'row',
@@ -120,7 +120,7 @@ const ShowDetailTransScreen = props => {
             Hôm nay
           </Text>
         </View>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };

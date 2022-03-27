@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TextInput,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -92,17 +93,9 @@ const AddTransactionScreen = props => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.container}>
       <View //-----------HEADER----------------
-        style={{
-          height: 55,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingRight: 10,
-          backgroundColor: 'white',
-          elevation: 2,
-        }}>
+        style={styles.headerView}>
         <Icon
           name="times"
           size={20}
@@ -111,41 +104,23 @@ const AddTransactionScreen = props => {
             setDefaultValue();
             goBack();
           }}
-          style={{
-            marginHorizontal: 5,
-            paddingHorizontal: 10,
-            paddingVertical: 10,
-          }}
+          style={styles.iconBack}
         />
-        <Text
-          style={{
-            color: 'black',
-            fontSize: fontSizes.h2,
-            flex: 1,
-            marginLeft: 10,
-          }}>
-          Thêm giao dịch
-        </Text>
+        <Text style={styles.title}>Thêm giao dịch</Text>
         <TouchableOpacity
           disabled={isValidAddTransaction(money, type)}
           onPress={handleSubmit}>
-          <Text style={{color: 'black', fontSize: fontSizes.h3}}>Lưu</Text>
+          <Text style={styles.saveText}>Lưu</Text>
         </TouchableOpacity>
       </View>
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: 'white',
-          marginTop: 30,
-          elevation: 2,
-        }}>
+      <View style={styles.bodyView}>
         <View //-----------MONEY------------
-          style={{flexDirection: 'row'}}>
-          <View style={{flex: 0.1}} />
-          <View style={{flexDirection: 'column', flex: 0.9}}>
+          style={styles.bigView}>
+          <View style={styles.space} />
+          <View style={styles.inputView}>
             <TextInput
               maxLength={10}
-              style={{fontSize: fontSizes.h2, color: 'black'}}
+              style={styles.inputMoney}
               placeholder={'0 đ'}
               keyboardType={'numeric'}
               placeholderTextColor={'gray'}
@@ -156,18 +131,16 @@ const AddTransactionScreen = props => {
                 }
               }}
             />
-            <View
-              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
-            />
+            <View style={styles.line} />
           </View>
         </View>
         <View //-----------TYPE------------
-          style={{flexDirection: 'row'}}>
-          <View style={{flex: 0.1}} />
-          <View style={{flex: 0.9, flexDirection: 'column'}}>
+          style={styles.bigView}>
+          <View style={styles.space} />
+          <View style={styles.inputView}>
             <Picker
               dropdownIconColor={'black'}
-              style={{color: 'black'}}
+              style={styles.picker}
               selectedValue={type}
               onValueChange={(itemValue, itemIndex) => setType(itemValue)}>
               <Picker.Item label="Chọn nhóm" value={'Chọn nhóm'} />
@@ -182,64 +155,44 @@ const AddTransactionScreen = props => {
               <Picker.Item label="Tiền bán đồ" value="Tiền bán đồ thu" />
               <Picker.Item label="Khác" value="Khác thu" />
             </Picker>
-            <View
-              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
-            />
+            <View style={styles.line} />
           </View>
         </View>
         <View //-----------DESCRIPTION------------
-          style={{flexDirection: 'row'}}>
-          <View
-            style={{
-              flex: 0.1,
-              justifyContent: 'center',
-            }}>
+          style={styles.bigView}>
+          <View style={styles.desIconView}>
             <Icon name="grip-lines" color={'black'} size={20} />
           </View>
-          <View style={{flex: 0.9, flexDirection: 'column'}}>
+          <View style={styles.inputView}>
             <TextInput
               maxLength={50}
-              style={{fontSize: fontSizes.h3, color: 'black'}}
+              style={styles.inputDes}
               placeholder={'Thêm ghi chú (không bắt buộc)'}
               placeholderTextColor={'gray'}
               onChangeText={text => {
                 setDescription(text);
               }}
             />
-            <View
-              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
-            />
+            <View style={styles.line} />
           </View>
         </View>
         <View //----------DAY------------
-          style={{flexDirection: 'row'}}>
-          <View
-            style={{
-              flex: 0.1,
-              justifyContent: 'center',
-            }}>
+          style={styles.bigView}>
+          <View style={styles.dayIconView}>
             <Icon name="calendar" color={'black'} size={20} />
           </View>
-          <View style={{flex: 0.9, flexDirection: 'column'}}>
+          <View style={styles.inputView}>
             <TouchableOpacity
               onPress={() => {
                 showMode('date');
               }}>
-              <Text
-                style={{
-                  fontSize: fontSizes.h3,
-                  color: 'black',
-                  marginVertical: 10,
-                  marginHorizontal: 5,
-                }}>
+              <Text style={styles.dayBtnText}>
                 {dateText === validateCurrentDate(new Date())
                   ? 'Hôm nay'
                   : dateText}
               </Text>
             </TouchableOpacity>
-            <View
-              style={{backgroundColor: colors.blurColorBlack2, height: 1}}
-            />
+            <View style={styles.line} />
           </View>
           {show && (
             <DateTimePicker
@@ -257,5 +210,58 @@ const AddTransactionScreen = props => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+  headerView: {
+    height: 55,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 10,
+    backgroundColor: 'white',
+    elevation: 2,
+  },
+  iconBack: {
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  title: {
+    color: 'black',
+    fontSize: fontSizes.h2,
+    flex: 1,
+    marginLeft: 10,
+  },
+  saveText: {color: 'black', fontSize: fontSizes.h3},
+  bodyView: {
+    padding: 10,
+    backgroundColor: 'white',
+    marginTop: 30,
+    elevation: 2,
+  },
+  bigView: {flexDirection: 'row'},
+  inputView: {flex: 0.9, flexDirection: 'column'},
+  space: {flex: 0.1},
+  inputMoneyView: {flexDirection: 'column', flex: 0.9},
+  inputMoney: {fontSize: fontSizes.h2, color: 'black'},
+  line: {backgroundColor: colors.blurColorBlack2, height: 1},
+  picker: {color: 'black'},
+  desIconView: {
+    flex: 0.1,
+    justifyContent: 'center',
+  },
+  inputDes: {fontSize: fontSizes.h3, color: 'black'},
+  dayIconView: {
+    flex: 0.1,
+    justifyContent: 'center',
+  },
+  dayBtnText: {
+    fontSize: fontSizes.h3,
+    color: 'black',
+    marginVertical: 10,
+    marginHorizontal: 5,
+  },
+});
 
 export default AddTransactionScreen;

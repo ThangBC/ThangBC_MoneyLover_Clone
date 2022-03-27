@@ -1,80 +1,46 @@
 import React from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {Text, View, TouchableOpacity, StyleSheet} from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
-import {validateCurrentDate} from '../../../utils/validations';
+import {
+  convertDate,
+  convertMonth,
+  convertYear,
+  convertDay,
+} from './validationsHome';
 
 const ItemExpenseTracker = props => {
   const {index, item} = props;
-  console.log(`item: ${JSON.stringify(item)}`);
-
-  const convertDate = () => {
-    return item.date.slice(0, 2);
-  };
-  const convertMonth = () => {
-    return item.date.slice(3, -5);
-  };
-  const convertYear = () => {
-    return item.date.slice(-4);
-  };
-
-  const convertDay = () => {
-    return item.date == validateCurrentDate(new Date())
-      ? 'Hôm nay'
-      : item.date > validateCurrentDate(new Date())
-      ? 'Tương lai'
-      : 'Các ngày trước';
-  };
 
   return (
     <TouchableOpacity disabled={true}>
       <View>
-        <View
-          style={{
-            padding: 10,
-            backgroundColor: 'white',
-            marginTop: index == 0 ? 35 : 0,
-            marginBottom: 20,
-            elevation: 2,
-          }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{color: 'black', fontSize: fontSizes.h1}}>
-              {convertDate()}
-            </Text>
-            <View style={{flex: 1, marginLeft: 10}}>
-              <Text style={{color: 'black'}}>{convertDay()}</Text>
-              <Text style={{color: 'gray'}}>
-                tháng {convertMonth()} {convertYear()}
+        <View style={[styles.itemTransView, {marginTop: index == 0 ? 35 : 0}]}>
+          <View style={styles.dateView}>
+            <Text style={styles.date}>{convertDate(item)}</Text>
+            <View style={styles.dayView}>
+              <Text style={styles.day}>{convertDay(item)}</Text>
+              <Text style={styles.monthYear}>
+                tháng {convertMonth(item)} {convertYear(item)}
               </Text>
             </View>
-            <Text style={{color: 'black', fontSize: fontSizes.h3}}>
+            <Text style={styles.moneyTotal}>
               {item.type == 'chi' ? '-' : '+'}
               {item.money}₫
             </Text>
           </View>
-          <View
-            style={{
-              height: 1,
-              backgroundColor: colors.blurColorBlack2,
-              alignItems: 'center',
-              marginVertical: 5,
-            }}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 5,
-              justifyContent: 'space-between',
-            }}>
-            <Text style={{color: 'black', fontSize: fontSizes.h3, flex: 1}}>
-              {item.typeName}
-            </Text>
+          <View style={styles.line} />
+          <View style={styles.typeView}>
+            <Text style={styles.type}>{item.typeName}</Text>
             <Text
-              style={{
-                color:
-                  item.type == 'chi' ? colors.spentColor : colors.collectColor,
-                fontSize: fontSizes.h3,
-                marginLeft: 10,
-              }}>
+              style={[
+                styles.money,
+                {
+                  color:
+                    item.type == 'chi'
+                      ? colors.spentColor
+                      : colors.collectColor,
+                },
+              ]}>
               {item.money}
             </Text>
           </View>
@@ -83,5 +49,36 @@ const ItemExpenseTracker = props => {
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  itemTransView: {
+    padding: 10,
+    backgroundColor: 'white',
+    marginBottom: 20,
+    elevation: 2,
+  },
+  dateView: {flexDirection: 'row', alignItems: 'center'},
+  date: {color: 'black', fontSize: fontSizes.h1},
+  dayView: {flex: 1, marginLeft: 10},
+  day: {color: 'black'},
+  monthYear: {color: 'gray'},
+  moneyTotal: {color: 'black', fontSize: fontSizes.h3},
+  line: {
+    height: 1,
+    backgroundColor: colors.blurColorBlack2,
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  typeView: {
+    flexDirection: 'row',
+    marginTop: 5,
+    justifyContent: 'space-between',
+  },
+  type: {color: 'black', fontSize: fontSizes.h3, flex: 1},
+  money: {
+    fontSize: fontSizes.h3,
+    marginLeft: 10,
+  },
+});
 
 export default ItemExpenseTracker;

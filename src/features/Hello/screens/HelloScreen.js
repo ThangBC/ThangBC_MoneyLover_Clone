@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import slides from '../components/slides';
@@ -37,46 +38,24 @@ const HelloScreen = props => {
     });
   }, []);
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.container}>
       <View //-------------HEADER---------------
-        style={{
-          padding: 10,
-          flex: 0.1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+        style={styles.header}>
         <Image
           source={require('../../../assets/logo_horizontal.png')}
-          style={{width: 145, height: 30, marginLeft: 10}}
+          style={styles.logoHeader}
           resizeMode={'center'}
         />
         <TouchableOpacity
           onPress={() => {
             alert('Tính năng đang được phát triển');
           }}>
-          <Text
-            style={{
-              backgroundColor: colors.blurColorBlack,
-              color: colors.primaryColor,
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-              fontSize: fontSizes.h4,
-              fontWeight: 'bold',
-              borderRadius: 10,
-            }}>
-            Tiếng Việt
-          </Text>
+          <Text style={styles.textHeader}>Tiếng Việt</Text>
         </TouchableOpacity>
       </View>
-
       <View //----------BODY------------
-        style={{
-          flex: 0.65,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <View style={{flex: 0.95}}>
+        style={styles.body}>
+        <View style={styles.bodyView1}>
           <FlatList
             data={slides}
             horizontal
@@ -91,83 +70,112 @@ const HelloScreen = props => {
             }}
           />
         </View>
-        <View
-          style={{
-            flex: 0.05,
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
+        <View style={styles.bodyView2}>
           {slides.map((item, index) => {
             return (
               <View
                 key={item.id}
-                style={{
-                  width: 10,
-                  height: 10,
-                  backgroundColor:
-                    imgActive == index
-                      ? colors.primaryColor
-                      : colors.blurColorBlack,
-                  borderRadius: 20,
-                  marginHorizontal: 5,
-                }}
+                style={[
+                  styles.slide,
+                  {
+                    backgroundColor:
+                      imgActive == index
+                        ? colors.primaryColor
+                        : colors.blurColorBlack,
+                  },
+                ]}
               />
             );
           })}
         </View>
       </View>
       <View //----------FOOTER------------
-        style={{alignItems: 'center', flex: 0.25, padding: 10}}>
+        style={styles.footer}>
         <TouchableOpacity
           onPress={() => {
             navigate('RegisterScreen');
           }}
-          style={{
-            backgroundColor: colors.primaryColor,
-            width: '90%',
-            borderRadius: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              padding: 12,
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: fontSizes.h4,
-            }}>
-            Đăng ký miễn phí
-          </Text>
+          style={styles.buttonRes}>
+          <Text style={styles.textBtnRes}>Đăng ký miễn phí</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigate('LoginScreen');
           }}
-          style={{
-            backgroundColor: colors.blurColorBlack,
-            width: '90%',
-            borderRadius: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginVertical: 10,
-          }}>
-          <Text
-            style={{
-              padding: 12,
-              color: colors.primaryColor,
-              fontWeight: 'bold',
-              fontSize: fontSizes.h4,
-            }}>
-            Đăng nhập
-          </Text>
+          style={styles.buttonLogin}>
+          <Text style={styles.textBtnLogin}>Đăng nhập</Text>
         </TouchableOpacity>
-        <Text
-          style={{color: 'gray', marginVertical: 20, fontSize: fontSizes.h5}}>
-          Bui Cong Thang 123
-        </Text>
+        <Text style={styles.textFooter}>Clone By Bui Cong Thang</Text>
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+  header: {
+    padding: 10,
+    flex: 0.1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logoHeader: {width: 145, height: 30, marginLeft: 10},
+  textHeader: {
+    backgroundColor: colors.blurColorBlack,
+    color: colors.primaryColor,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    fontSize: fontSizes.h4,
+    fontWeight: 'bold',
+    borderRadius: 10,
+  },
+  body: {
+    flex: 0.65,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bodyView1: {flex: 0.95},
+  bodyView2: {
+    flex: 0.05,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  slide: {
+    width: 10,
+    height: 10,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  footer: {alignItems: 'center', flex: 0.25, padding: 10},
+  buttonRes: {
+    backgroundColor: colors.primaryColor,
+    width: '90%',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textBtnRes: {
+    padding: 12,
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: fontSizes.h4,
+  },
+  buttonLogin: {
+    backgroundColor: colors.blurColorBlack,
+    width: '90%',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  textBtnLogin: {
+    padding: 12,
+    color: colors.primaryColor,
+    fontWeight: 'bold',
+    fontSize: fontSizes.h4,
+  },
+  textFooter: {color: 'gray', marginVertical: 20, fontSize: fontSizes.h5},
+});
 
 export default HelloScreen;

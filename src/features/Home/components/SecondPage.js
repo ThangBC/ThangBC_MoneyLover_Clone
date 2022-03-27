@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import ItemExpenseTracker from './ItemExpenseTracker';
@@ -14,8 +15,8 @@ const SecondPage = props => {
   const {navigation} = props;
   const {navigate, goBack} = navigation;
   return (
-    <View style={{flex: 1}}>
-      <ScrollView>
+    <View style={styles.container}>
+      {/* <ScrollView>
         <View style={{backgroundColor: 'white', padding: 10, elevation: 2}}>
           <View
             style={{
@@ -90,9 +91,13 @@ const SecondPage = props => {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </ScrollView> */}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1, backgroundColor: 'white'},
+});
 
 export default SecondPage;

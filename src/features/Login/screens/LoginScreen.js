@@ -7,10 +7,15 @@ import {
   TextInput,
   ScrollView,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints';
-import {validateEmail, validatePassword} from '../../../utils/validations';
+import {
+  isValidLogin,
+  validErrorEmail,
+  validErrorPass,
+} from '../components/validationLogin';
 import {
   auth,
   signInWithEmailAndPassword,
@@ -66,10 +71,10 @@ const LoginScreen = props => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, padding: 10}}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <View //---------ICON_BACK-----------
-          style={{flexDirection: 'row'}}>
+          style={styles.iconBackView}>
           <Icon
             onPress={() => {
               navigate('HelloScreen');
@@ -77,75 +82,34 @@ const LoginScreen = props => {
             name="arrow-left"
             size={25}
             color="black"
-            style={{padding: 10}}
+            style={styles.iconBack}
           />
         </View>
-        <Text
-          style={{color: 'black', fontSize: fontSizes.h1, alignSelf: 'center'}}>
-          Đăng nhập
-        </Text>
+        <Text style={styles.loginTitle}>Đăng nhập</Text>
         <View //---------LOGIN_GOOGLE-----------
-          style={{width: '90%', alignSelf: 'center', marginTop: 15}}>
+          style={styles.loginGoogleView}>
           <TouchableOpacity
-            onPress={handleGoogleSignIn}
-            style={{
-              backgroundColor: colors.blurColorBlack2,
-              flexDirection: 'row',
-              alignItems: 'center',
-              height: 40,
-              borderRadius: 7,
-              justifyContent: 'center',
-            }}>
+            onPress={() => {
+              alert('Tính năng đang được phát triển');
+            }}
+            style={styles.loginGoogleBtn}>
             <Image
               source={require('../../../assets/google_logo.png')}
-              style={{
-                width: 20,
-                height: 20,
-                marginLeft: 10,
-                marginRight: 20,
-                position: 'absolute',
-                left: 5,
-              }}
+              style={styles.googleLogo}
             />
-            <Text
-              style={{
-                color: '#EB4132',
-                fontSize: fontSizes.h3,
-              }}>
-              Kết nối với Google
-            </Text>
+            <Text style={styles.loginGoogleText}>Kết nối với Google</Text>
           </TouchableOpacity>
-          <Text
-            style={{
-              color: 'gray',
-              textAlign: 'center',
-              marginTop: 15,
-              fontSize: fontSizes.h6,
-            }}>
+          <Text style={styles.permissionText}>
             Chúng tôi sẽ không đăng thông tin mà không có sự cho phép của bạn
           </Text>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 20,
-          }}>
-          <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
-          <Text
-            style={{
-              color: 'gray',
-              fontSize: fontSizes.h3,
-              fontWeight: 'bold',
-              marginHorizontal: 7,
-            }}>
-            HOẶC
-          </Text>
-          <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
+        <View style={styles.lineView}>
+          <View style={styles.line} />
+          <Text style={styles.lineText}>HOẶC</Text>
+          <View style={styles.line} />
         </View>
         <View //---------LOGIN_EMAIL&PASSWORD-----------
-          style={{width: '90%', alignSelf: 'center', marginTop: 20}}>
+          style={styles.loginInputView}>
           <TextInput
             onFocus={() => {
               setFocusEmail(true);
@@ -153,47 +117,29 @@ const LoginScreen = props => {
             onBlur={() => {
               setFocusEmail(false);
             }}
-            style={{
-              fontSize: fontSizes.h3,
-              paddingHorizontal: 10,
-              color: 'black',
-              marginTop: 10,
-            }}
+            style={styles.emailInput}
             placeholder="Email"
             placeholderTextColor={focusEmail ? colors.primaryColor : 'gray'}
+            value={email}
             onChangeText={textEmail => {
-              if (textEmail.trim().length == 0) {
-                setErrorEmail('*Vui lòng không để trống Email');
-              } else if (!validateEmail(textEmail)) {
-                setErrorEmail('*Vui lòng nhập đúng định dạng Email');
-              } else {
-                setErrorEmail('');
-                setEmail(textEmail);
-                return;
-              }
-              setEmail('');
+              setErrorEmail(validErrorEmail(textEmail));
+              setEmail(textEmail);
             }}
           />
           <View
-            style={{
-              backgroundColor: focusEmail ? colors.primaryColor : 'gray',
-              height: 2,
-            }}
+            style={[
+              styles.emailInputUnderline,
+              {
+                backgroundColor: focusEmail ? colors.primaryColor : 'gray',
+              },
+            ]}
           />
           {errorEmail != '' ? (
-            <Text
-              style={{
-                color: 'red',
-                marginLeft: 10,
-                fontSize: fontSizes.h5,
-              }}>
-              {errorEmail}
-            </Text>
+            <Text style={styles.errorText}>{errorEmail}</Text>
           ) : (
             <View />
           )}
-          <View
-            style={{justifyContent: 'center', marginBottom: 10, marginTop: 10}}>
+          <View style={styles.loginInputPassView}>
             <TextInput
               onFocus={() => {
                 setFocusPass(true);
@@ -201,31 +147,14 @@ const LoginScreen = props => {
               onBlur={() => {
                 setFocusPass(false);
               }}
-              style={{
-                fontSize: fontSizes.h3,
-                paddingLeft: 10,
-                paddingRight: 40,
-                color: 'black',
-              }}
+              style={styles.passInput}
               secureTextEntry={hidePass ? true : false}
               placeholder="Mật khẩu"
               placeholderTextColor={focusPass ? colors.primaryColor : 'gray'}
+              value={password}
               onChangeText={textPassword => {
-                if (textPassword.trim().length == 0) {
-                  setErrorPassword('*Vui lòng không để trống mật khẩu');
-                } else if (validatePassword(textPassword)) {
-                  setErrorPassword('*Vui lòng không nhập ký tự đặc biệt');
-                } else if (
-                  textPassword.trim().length < 6 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
-                } else {
-                  setErrorPassword('');
-                  setPassword(textPassword);
-                  return;
-                }
-                setPassword('');
+                setErrorPassword(validErrorPass(textPassword));
+                setPassword(textPassword);
               }}
             />
             <Icon
@@ -235,84 +164,56 @@ const LoginScreen = props => {
               name={hidePass ? 'eye-slash' : 'eye'}
               size={20}
               color={focusPass ? colors.primaryColor : 'gray'}
-              style={{position: 'absolute', right: 10}}
+              style={styles.iconShowPass}
             />
             <View
-              style={{
-                backgroundColor: focusPass ? colors.primaryColor : 'gray',
-                height: 2,
-              }}
+              style={[
+                styles.passInputUnderline,
+                {
+                  backgroundColor: focusPass ? colors.primaryColor : 'gray',
+                },
+              ]}
             />
             {errorPassword != '' ? (
-              <Text
-                style={{
-                  color: 'red',
-                  marginLeft: 10,
-                  fontSize: fontSizes.h5,
-                }}>
-                {errorPassword}
-              </Text>
+              <Text style={styles.errorText}>{errorPassword}</Text>
             ) : (
               <View />
             )}
           </View>
 
           <TouchableOpacity
-            disabled={email != '' && password != '' ? false : true}
+            disabled={!isValidLogin(email, password)}
             onPress={handleLogin}
-            style={{
-              backgroundColor:
-                email != '' && password != ''
+            style={[
+              styles.loginBtn,
+              {
+                backgroundColor: isValidLogin(email, password)
                   ? colors.primaryColor
                   : colors.blurColorBlack2,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 10,
-              marginTop: 10,
-            }}>
+              },
+            ]}>
             <Text
-              style={{
-                color: email != '' && password != '' ? 'white' : 'gray',
-                padding: 10,
-                fontSize: fontSizes.h3,
-              }}>
+              style={[
+                styles.loginBtnText,
+                {
+                  color: isValidLogin(email, password) ? 'white' : 'gray',
+                },
+              ]}>
               Đăng nhập
             </Text>
           </TouchableOpacity>
-          <View
-            style={{
-              alignSelf: 'center',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '90%',
-            }}>
+          <View style={styles.footerView}>
             <TouchableOpacity
               onPress={() => {
                 navigate('RegisterScreen');
               }}>
-              <Text
-                style={{
-                  color: colors.primaryColor,
-                  marginTop: 10,
-                  fontSize: fontSizes.h4,
-                  alignSelf: 'center',
-                }}>
-                Đăng ký
-              </Text>
+              <Text style={styles.resBtn}>Đăng ký</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 alert('Tính năng đang được phát triển');
               }}>
-              <Text
-                style={{
-                  color: colors.primaryColor,
-                  marginTop: 10,
-                  fontSize: fontSizes.h4,
-                  alignSelf: 'center',
-                }}>
-                Quên mật khẩu ?
-              </Text>
+              <Text style={styles.forgotPassBtn}>Quên mật khẩu ?</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -320,5 +221,110 @@ const LoginScreen = props => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1, padding: 10},
+  iconBackView: {flexDirection: 'row'},
+  iconBack: {padding: 10},
+  loginTitle: {color: 'black', fontSize: fontSizes.h1, alignSelf: 'center'},
+  loginGoogleView: {width: '90%', alignSelf: 'center', marginTop: 15},
+  loginGoogleBtn: {
+    backgroundColor: colors.blurColorBlack2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    borderRadius: 7,
+    justifyContent: 'center',
+  },
+  googleLogo: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
+    marginRight: 20,
+    position: 'absolute',
+    left: 5,
+  },
+  loginGoogleText: {
+    color: '#EB4132',
+    fontSize: fontSizes.h3,
+  },
+  permissionText: {
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 15,
+    fontSize: fontSizes.h6,
+  },
+  lineView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  line: {backgroundColor: 'gray', height: 1, flex: 1},
+  lineText: {
+    color: 'gray',
+    fontSize: fontSizes.h3,
+    fontWeight: 'bold',
+    marginHorizontal: 7,
+  },
+  loginInputView: {width: '90%', alignSelf: 'center', marginTop: 20},
+  emailInput: {
+    fontSize: fontSizes.h3,
+    paddingHorizontal: 10,
+    color: 'black',
+    marginTop: 10,
+  },
+  emailInputUnderline: {
+    height: 2,
+  },
+  errorText: {
+    color: 'red',
+    marginLeft: 10,
+    fontSize: fontSizes.h5,
+  },
+  loginInputPassView: {
+    justifyContent: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  passInput: {
+    fontSize: fontSizes.h3,
+    paddingLeft: 10,
+    paddingRight: 40,
+    color: 'black',
+  },
+  iconShowPass: {position: 'absolute', right: 10},
+  passInputUnderline: {
+    height: 2,
+  },
+  loginBtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  loginBtnText: {
+    padding: 10,
+    fontSize: fontSizes.h3,
+  },
+  footerView: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
+  },
+  resBtn: {
+    color: colors.primaryColor,
+    marginTop: 10,
+    fontSize: fontSizes.h4,
+    alignSelf: 'center',
+  },
+  forgotPassBtn: {
+    color: colors.primaryColor,
+    marginTop: 10,
+    fontSize: fontSizes.h4,
+    alignSelf: 'center',
+  },
+});
 
 export default LoginScreen;

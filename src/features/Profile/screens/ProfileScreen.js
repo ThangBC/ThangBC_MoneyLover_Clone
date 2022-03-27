@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, TouchableOpacity, TextInput} from 'react-native';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
 import {
@@ -9,14 +15,12 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   GoogleSignin,
-  collection,
-  doc,
-  setDoc,
-  db,
-  getDocs,
 } from '../../../firebase/firebase';
 import Modal from 'react-native-modal';
-import {validatePassword} from '../../../utils/validations';
+import {
+  isValidChangePass,
+  validErrorPass,
+} from '../components/validationsProfile';
 
 const ProfileScreen = props => {
   const {navigation, route} = props;
@@ -59,12 +63,10 @@ const ProfileScreen = props => {
             setDefaultStates();
           })
           .catch(error => {
-            alert(error.message);
             console.log(error.message);
           });
       })
       .catch(error => {
-        alert(error.message);
         console.log(error.message);
       });
   };
@@ -88,152 +90,60 @@ const ProfileScreen = props => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={styles.container}>
       <View //-----------HEADER----------------
-        style={{
-          height: 70,
-          padding: 10,
-          justifyContent: 'center',
-        }}>
-        <Text style={{color: 'black', fontSize: fontSizes.h1, marginLeft: 5}}>
-          Quản lý tài khoản
-        </Text>
+        style={styles.headerView}>
+        <Text style={styles.title}>Quản lý tài khoản</Text>
       </View>
-      <View style={{height: 1, backgroundColor: colors.blurColorBlack2}} />
+      <View style={styles.line} />
       <View //-----------------INFORMATION-------------------
-        style={{alignItems: 'center'}}>
+        style={styles.inforView}>
         <Icon
           name="user-circle"
           size={70}
           color={colors.primaryColor}
-          style={{marginTop: 20}}
+          style={styles.avatar}
         />
-        <Text style={{color: 'black', fontSize: fontSizes.h3, marginTop: 10}}>
-          {displayName()}
-        </Text>
-        <Text
-          style={{
-            color: 'gray',
-            fontSize: fontSizes.h3,
-            marginTop: 5,
-            marginBottom: 20,
-          }}>
-          {auth.currentUser?.email}
-        </Text>
+        <Text style={styles.userName}>{displayName()}</Text>
+        <Text style={styles.userEmail}>{auth.currentUser?.email}</Text>
       </View>
 
       <TouchableOpacity
         onPress={() => {
           setModalVisible(!isModalVisible);
         }}
-        style={{
-          alignItems: 'center',
-          backgroundColor: 'white',
-          borderTopWidth: 1,
-          borderBottomWidth: 1,
-          borderColor: colors.blurColorBlack2,
-          display: auth.currentUser?.photoURL ? 'none' : 'flex',
-        }}>
-        <Text
-          style={{
-            color: colors.primaryColor,
-            fontSize: fontSizes.h3,
-            padding: 10,
-          }}>
-          Thay đổi mật khẩu
-        </Text>
+        style={styles.changePassBtn}>
+        <Text style={styles.changePassBtnText}>Thay đổi mật khẩu</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={handleSignOut}
-        style={{
-          alignSelf: 'center',
-          width: '90%',
-          position: 'absolute',
-          alignItems: 'center',
-          backgroundColor: colors.blurColorBlack,
-          marginTop: 30,
-          borderRadius: 30,
-          bottom: 20,
-        }}>
-        <Text style={{color: 'red', fontSize: fontSizes.h2, padding: 7}}>
-          Đăng xuất
-        </Text>
+      <TouchableOpacity onPress={handleSignOut} style={styles.logOutBtn}>
+        <Text style={styles.logOutBtnText}>Đăng xuất</Text>
       </TouchableOpacity>
       <Modal //--------------MODAL-----------------
         onBackdropPress={() => {
           setModalVisible(false);
         }}
         isVisible={isModalVisible}>
-        <View
-          style={{
-            backgroundColor: 'white',
-            borderRadius: 10,
-            paddingHorizontal: 20,
-            paddingVertical: 20,
-          }}>
-          <Text
-            style={{
-              color: colors.primaryColor,
-              fontSize: fontSizes.h1,
-              alignSelf: 'center',
-            }}>
-            Đổi mật khẩu
-          </Text>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitle}>Đổi mật khẩu</Text>
           {errorCurrentPassword != '' ? (
-            <Text
-              style={{
-                color: 'red',
-                marginLeft: 10,
-                fontSize: fontSizes.h5,
-              }}>
-              {errorCurrentPassword}
-            </Text>
+            <Text style={styles.errorText}>{errorCurrentPassword}</Text>
           ) : errorNewPassword != '' ? (
-            <Text
-              style={{
-                color: 'red',
-                marginLeft: 10,
-                fontSize: fontSizes.h5,
-              }}>
-              {errorNewPassword}
-            </Text>
+            <Text style={styles.errorText}>{errorNewPassword}</Text>
           ) : (
             <View />
           )}
           <View //--------------INPUT CURRENT PASSWORD-----------------
-            style={{justifyContent: 'center', marginTop: 10}}>
+            style={styles.inputPassView}>
             <TextInput
               secureTextEntry={hidePassCurrent ? true : false}
               text
-              style={{
-                backgroundColor: colors.blurColorBlack,
-                borderRadius: 10,
-                paddingLeft: 10,
-                paddingRight: 40,
-                fontSize: fontSizes.h3,
-                color: 'black',
-              }}
+              style={styles.inputPass}
               placeholder={'Nhập mật khẩu cũ'}
               placeholderTextColor={'gray'}
               onChangeText={textPassword => {
-                if (textPassword.trim().length == 0) {
-                  setErrorCurrentPassword('*Vui lòng không để trống mật khẩu');
-                } else if (validatePassword(textPassword)) {
-                  setErrorCurrentPassword(
-                    '*Vui lòng không nhập những ký tự đặc biệt',
-                  );
-                } else if (
-                  textPassword.trim().length < 6 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorCurrentPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
-                } else {
-                  setErrorCurrentPassword('');
-                  setCurrentPassword(textPassword);
-                  return;
-                }
-                setCurrentPassword('');
+                setErrorCurrentPassword(validErrorPass(textPassword));
+                setCurrentPassword(textPassword);
               }}
             />
             <Icon
@@ -243,42 +153,20 @@ const ProfileScreen = props => {
               name={hidePassCurrent ? 'eye-slash' : 'eye'}
               size={20}
               color={'gray'}
-              style={{position: 'absolute', right: 10}}
+              style={styles.iconShowPass}
             />
           </View>
 
           <View //--------------INPUT NEW PASSWORD-----------------
-            style={{justifyContent: 'center', marginTop: 10}}>
+            style={styles.inputPassView}>
             <TextInput
               secureTextEntry={hidePassNew ? true : false}
-              style={{
-                backgroundColor: colors.blurColorBlack,
-                borderRadius: 10,
-                paddingLeft: 10,
-                paddingRight: 40,
-                fontSize: fontSizes.h3,
-                color: 'black',
-              }}
+              style={styles.inputPass}
               placeholder={'Nhập mật khẩu mới'}
               placeholderTextColor={'gray'}
               onChangeText={textPassword => {
-                if (textPassword.trim().length == 0) {
-                  setErrorNewPassword('*Vui lòng không để trống mật khẩu');
-                } else if (validatePassword(textPassword)) {
-                  setErrorNewPassword(
-                    '*Vui lòng không nhập những ký tự đặc biệt',
-                  );
-                } else if (
-                  textPassword.trim().length < 6 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorNewPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
-                } else {
-                  setErrorNewPassword('');
-                  setNewPassword(textPassword);
-                  return;
-                }
-                setNewPassword('');
+                setErrorNewPassword(validErrorPass(textPassword));
+                setNewPassword(textPassword);
               }}
             />
             <Icon
@@ -288,59 +176,41 @@ const ProfileScreen = props => {
               name={hidePassNew ? 'eye-slash' : 'eye'}
               size={20}
               color={'gray'}
-              style={{position: 'absolute', right: 10}}
+              style={styles.iconShowPass}
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginTop: 20,
-            }}>
+          <View style={styles.btnConfirmView}>
             <TouchableOpacity
               onPress={() => {
                 setDefaultStates();
               }}
-              style={{
-                backgroundColor: colors.blurColorBlack2,
-                borderRadius: 10,
-                flex: 1,
-                marginRight: 20,
-              }}>
-              <Text
-                style={{
-                  color: 'gray',
-                  fontSize: fontSizes.h2,
-                  padding: 10,
-                  textAlign: 'center',
-                }}>
-                Hủy
-              </Text>
+              style={styles.cancelBtn}>
+              <Text style={styles.cancelBtnText}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              disabled={
-                currentPassword != '' && newPassword != '' ? false : true
-              }
+              disabled={!isValidChangePass(currentPassword, newPassword)}
               onPress={changePassword}
-              style={{
-                backgroundColor:
-                  currentPassword != '' && newPassword != ''
+              style={[
+                styles.confirmBtn,
+                {
+                  backgroundColor: isValidChangePass(
+                    currentPassword,
+                    newPassword,
+                  )
                     ? colors.primaryColor
                     : colors.blurColorBlack2,
-                borderRadius: 10,
-                flex: 1,
-              }}>
+                },
+              ]}>
               <Text
-                style={{
-                  color:
-                    currentPassword != '' && newPassword != ''
+                style={[
+                  styles.confirmBtnText,
+                  {
+                    color: isValidChangePass(currentPassword, newPassword)
                       ? 'white'
                       : 'gray',
-                  fontSize: fontSizes.h2,
-                  padding: 10,
-                  textAlign: 'center',
-                }}>
+                  },
+                ]}>
                 Xác nhận
               </Text>
             </TouchableOpacity>
@@ -350,4 +220,101 @@ const ProfileScreen = props => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1, backgroundColor: 'white'},
+  headerView: {
+    height: 70,
+    padding: 10,
+    justifyContent: 'center',
+  },
+  title: {color: 'black', fontSize: fontSizes.h1, marginLeft: 5},
+  line: {height: 1, backgroundColor: colors.blurColorBlack2},
+  inforView: {alignItems: 'center'},
+  avatar: {marginTop: 20},
+  userName: {color: 'black', fontSize: fontSizes.h3, marginTop: 10},
+  userEmail: {
+    color: 'gray',
+    fontSize: fontSizes.h3,
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  changePassBtn: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.blurColorBlack2,
+    display: auth.currentUser?.photoURL ? 'none' : 'flex',
+  },
+  changePassBtnText: {
+    color: colors.primaryColor,
+    fontSize: fontSizes.h3,
+    padding: 10,
+  },
+  logOutBtn: {
+    alignSelf: 'center',
+    width: '90%',
+    position: 'absolute',
+    alignItems: 'center',
+    backgroundColor: colors.blurColorBlack,
+    marginTop: 30,
+    borderRadius: 30,
+    bottom: 20,
+  },
+  logOutBtnText: {color: 'red', fontSize: fontSizes.h2, padding: 7},
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  modalTitle: {
+    color: colors.primaryColor,
+    fontSize: fontSizes.h1,
+    alignSelf: 'center',
+  },
+  errorText: {
+    color: 'red',
+    marginLeft: 10,
+    fontSize: fontSizes.h5,
+  },
+  inputPassView: {justifyContent: 'center', marginTop: 10},
+  inputPass: {
+    backgroundColor: colors.blurColorBlack,
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 40,
+    fontSize: fontSizes.h3,
+    color: 'black',
+  },
+  iconShowPass: {position: 'absolute', right: 10},
+  btnConfirmView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  cancelBtn: {
+    backgroundColor: colors.blurColorBlack2,
+    borderRadius: 10,
+    flex: 1,
+    marginRight: 20,
+  },
+  cancelBtnText: {
+    color: 'gray',
+    fontSize: fontSizes.h2,
+    padding: 10,
+    textAlign: 'center',
+  },
+  confirmBtn: {
+    borderRadius: 10,
+    flex: 1,
+  },
+  confirmBtnText: {
+    fontSize: fontSizes.h2,
+    padding: 10,
+    textAlign: 'center',
+  },
+});
+
 export default ProfileScreen;
