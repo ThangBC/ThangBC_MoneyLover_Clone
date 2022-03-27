@@ -48,7 +48,7 @@ const EditTransactionScreen = props => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View //-----------HEADER----------------
+      {/* <View //-----------HEADER----------------
         style={{
           height: 55,
           flexDirection: 'row',
@@ -198,7 +198,7 @@ const EditTransactionScreen = props => {
             />
           )}
         </View>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };

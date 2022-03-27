@@ -1,7 +1,18 @@
 import React, {useState} from 'react';
-import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import {colors, fontSizes} from '../../../constraints/';
 import {validateMoney, validateCurrentDate} from '../../../utils/validations';
+import {
+  isValidCreateWallet,
+  validErrorNameWallet,
+} from '../components/valdationsWallet';
 import {
   auth,
   signInWithCredential,
@@ -18,11 +29,11 @@ const AddWalletScreen = props => {
   const {email, password, googleCredential} = route.params;
 
   const [nameWallet, setNameWallet] = useState('');
-  const [currentMoney, setCurrentMoney] = useState('');
+  const [errorNameWallet, setErrorNameWallet] = useState('');
+  const [currentMoney, setCurrentMoney] = useState('0');
 
   const [focusNameWallet, setFocusNameWallet] = useState(false);
   const [focusCurrentMoney, setFocusCurrentMoney] = useState(false);
-  const [errorNameWallet, setErrorNameWallet] = useState('');
 
   const addFirestore = user => {
     const getIndex = user.email.indexOf('@');
@@ -69,36 +80,16 @@ const AddWalletScreen = props => {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 20,
-        justifyContent: 'space-between',
-      }}>
-      <View style={{alignItems: 'center'}}>
-        <Text
-          style={{
-            color: 'black',
-            fontSize: fontSizes.h2,
-            fontWeight: 'bold',
-            marginTop: 40,
-          }}>
-          Đầu tiên, hãy tạo ví
-        </Text>
-        <Text
-          style={{
-            color: 'gray',
-            textAlign: 'center',
-            fontSize: fontSizes.h6,
-            marginTop: 5,
-          }}>
+    <View style={styles.container}>
+      <View style={styles.headerView}>
+        <Text style={styles.textTitle}>Đầu tiên, hãy tạo ví</Text>
+        <Text style={styles.textContent}>
           MoneyLover giúp bạn ghi chép chi tiêu từ nhiều ví khác nhau. Mỗi ví
           đại diện cho một nguồn tiền như Tiền mặt, Tài khoản ngân hàng
         </Text>
         <Image
           source={require('../../../assets/wallet_icon.png')}
-          style={{width: 40, height: 40, marginTop: 20, marginBottom: 20}}
+          style={styles.logoWallet}
         />
         <TextInput //------------NAME WALLET INPUT-------------
           onFocus={() => {
@@ -108,37 +99,19 @@ const AddWalletScreen = props => {
             setFocusNameWallet(false);
           }}
           onChangeText={text => {
-            if (text.trim().length < 6 || text.trim().length > 20) {
-              setErrorNameWallet('*Vui lòng nhập tên ví 6-20 ký tự');
-            } else {
-              setErrorNameWallet('');
-              setNameWallet(text);
-              return;
-            }
-            setNameWallet('');
+            setErrorNameWallet(validErrorNameWallet(text));
+            setNameWallet(text);
           }}
-          style={{
-            borderBottomWidth: 2,
-            width: '100%',
-            borderColor: focusNameWallet ? colors.primaryColor : 'gray',
-
-            fontSize: fontSizes.h3,
-            color: 'black',
-          }}
+          style={[
+            styles.inputNameWallet,
+            {borderColor: focusNameWallet ? colors.primaryColor : 'gray'},
+          ]}
           placeholder={'Tên ví'}
           placeholderTextColor={focusNameWallet ? colors.primaryColor : 'gray'}
           maxLength={20}
         />
         {errorNameWallet != '' ? (
-          <Text
-            style={{
-              color: 'red',
-              alignSelf: 'flex-start',
-              marginLeft: 5,
-              marginBottom: 10,
-            }}>
-            {errorNameWallet}
-          </Text>
+          <Text style={styles.errorText}>{errorNameWallet}</Text>
         ) : (
           <View />
         )}
@@ -153,16 +126,13 @@ const AddWalletScreen = props => {
           value={currentMoney}
           onChangeText={text => {
             if (validateMoney(text) || text === '') {
-              setCurrentMoney(text);
+              setCurrentMoney(text === '' ? '0' : text);
             }
           }}
-          style={{
-            borderBottomWidth: 1,
-            width: '100%',
-            borderColor: focusCurrentMoney ? colors.primaryColor : 'gray',
-            fontSize: fontSizes.h3,
-            color: 'black',
-          }}
+          style={[
+            styles.inputMoney,
+            {borderColor: focusCurrentMoney ? colors.primaryColor : 'gray'},
+          ]}
           maxLength={12}
           placeholder={'Số dư (Số tiền hiện có)'}
           placeholderTextColor={
@@ -172,28 +142,69 @@ const AddWalletScreen = props => {
         />
       </View>
 
-      <View style={{alignItems: 'center'}}>
+      <View style={styles.footerView}>
         <TouchableOpacity
           onPress={handleRegister}
-          disabled={nameWallet != '' && currentMoney != '' ? false : true}
-          style={{
-            backgroundColor: colors.blurColorBlack,
-            width: '100%',
-            borderRadius: 30,
-          }}>
-          <Text
-            style={{
-              color: colors.primaryColor,
-              fontSize: fontSizes.h3,
-              padding: 10,
-              textAlign: 'center',
-            }}>
-            TẠO VÍ
-          </Text>
+          disabled={!isValidCreateWallet(nameWallet)}
+          style={styles.createWalletBtn}>
+          <Text style={styles.createWalletBtnText}>TẠO VÍ</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 20,
+    justifyContent: 'space-between',
+  },
+  headerView: {alignItems: 'center'},
+  textTitle: {
+    color: 'black',
+    fontSize: fontSizes.h2,
+    fontWeight: 'bold',
+    marginTop: 40,
+  },
+  textContent: {
+    color: 'gray',
+    textAlign: 'center',
+    fontSize: fontSizes.h6,
+    marginTop: 5,
+  },
+  logoWallet: {width: 40, height: 40, marginTop: 20, marginBottom: 20},
+  inputNameWallet: {
+    borderBottomWidth: 2,
+    width: '100%',
+    fontSize: fontSizes.h3,
+    color: 'black',
+  },
+  errorText: {
+    color: 'red',
+    alignSelf: 'flex-start',
+    marginLeft: 5,
+    marginBottom: 10,
+  },
+  inputMoney: {
+    borderBottomWidth: 1,
+    width: '100%',
+    fontSize: fontSizes.h3,
+    color: 'black',
+  },
+  footerView: {alignItems: 'center'},
+  createWalletBtn: {
+    backgroundColor: colors.blurColorBlack,
+    width: '100%',
+    borderRadius: 30,
+  },
+  createWalletBtnText: {
+    color: colors.primaryColor,
+    fontSize: fontSizes.h3,
+    padding: 10,
+    textAlign: 'center',
+  },
+});
 
 export default AddWalletScreen;

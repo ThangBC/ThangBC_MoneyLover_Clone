@@ -7,21 +7,22 @@ import {
   TextInput,
   ScrollView,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {fontSizes, colors} from '../../../constraints/';
-import {validateEmail, validatePassword} from '../../../utils/validations';
+import {
+  isValidRegister,
+  validErrorEmail,
+  validErrorPass,
+} from '../components/validationsRegister';
 import {
   auth,
   signInWithCredential,
-  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   GoogleSignin,
   collection,
-  query,
-  where,
   getDocs,
-  getDoc,
   db,
 } from '../../../firebase/firebase';
 
@@ -43,15 +44,11 @@ const RegisterScreen = props => {
   const handleGoogleSignIn = async () => {
     try {
       const {idToken} = await GoogleSignin.signIn();
-
       const googleCredential = GoogleAuthProvider.credential(idToken);
-
       // navigate('AddWalletScreen', {
       //   googleCredential: googleCredential,
       // });
-
       console.log((await signInWithCredential(auth, googleCredential)).user);
-
       // const res = signInWithCredential(auth, googleCredential);
       // res
       //   .then(user => {
@@ -81,10 +78,10 @@ const RegisterScreen = props => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, padding: 10}}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <View //---------ICON_BACK-----------
-          style={{flexDirection: 'row'}}>
+          style={styles.iconBackView}>
           <Icon
             onPress={() => {
               navigate('HelloScreen');
@@ -92,75 +89,34 @@ const RegisterScreen = props => {
             name="arrow-left"
             size={25}
             color="black"
-            style={{padding: 10}}
+            style={styles.iconBack}
           />
         </View>
-        <Text
-          style={{color: 'black', fontSize: fontSizes.h1, alignSelf: 'center'}}>
-          Đăng ký
-        </Text>
+        <Text style={styles.titleTextRes}>Đăng ký</Text>
         <View //---------LOGIN_GOOGLE-----------
-          style={{width: '90%', alignSelf: 'center', marginTop: 15}}>
+          style={styles.loginGoogleView}>
           <TouchableOpacity
-            onPress={handleGoogleSignIn}
-            style={{
-              backgroundColor: colors.blurColorBlack2,
-              flexDirection: 'row',
-              alignItems: 'center',
-              height: 40,
-              borderRadius: 7,
-              justifyContent: 'center',
-            }}>
+            onPress={() => {
+              alert('Tính năng đang được phát triển');
+            }}
+            style={styles.loginGoogleBtn}>
             <Image
               source={require('../../../assets/google_logo.png')}
-              style={{
-                width: 20,
-                height: 20,
-                marginLeft: 10,
-                marginRight: 20,
-                position: 'absolute',
-                left: 5,
-              }}
+              style={styles.googleLogo}
             />
-            <Text
-              style={{
-                color: '#EB4132',
-                fontSize: fontSizes.h3,
-              }}>
-              Kết nối với Google
-            </Text>
+            <Text style={styles.loginGoogleText}>Kết nối với Google</Text>
           </TouchableOpacity>
-          <Text
-            style={{
-              color: 'gray',
-              textAlign: 'center',
-              marginTop: 15,
-              fontSize: fontSizes.h6,
-            }}>
+          <Text style={styles.permissionText}>
             Chúng tôi sẽ không đăng thông tin mà không có sự cho phép của bạn
           </Text>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 20,
-          }}>
-          <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
-          <Text
-            style={{
-              color: 'gray',
-              fontSize: fontSizes.h3,
-              fontWeight: 'bold',
-              marginHorizontal: 7,
-            }}>
-            HOẶC
-          </Text>
-          <View style={{backgroundColor: 'gray', height: 1, flex: 1}} />
+        <View style={styles.lineView}>
+          <View style={styles.line} />
+          <Text style={styles.lineText}>HOẶC</Text>
+          <View style={styles.line} />
         </View>
         <View //---------REGISTER_EMAIL&PASSWORD-----------
-          style={{width: '90%', alignSelf: 'center', marginTop: 20}}>
+          style={styles.resInputView}>
           <TextInput
             onFocus={() => {
               setFocusEmail(true);
@@ -168,47 +124,27 @@ const RegisterScreen = props => {
             onBlur={() => {
               setFocusEmail(false);
             }}
-            style={{
-              fontSize: fontSizes.h3,
-              paddingHorizontal: 10,
-              color: 'black',
-              marginTop: 10,
-            }}
+            style={styles.inputEmail}
             placeholder="Email"
+            value={email}
             placeholderTextColor={focusEmail ? colors.primaryColor : 'gray'}
             onChangeText={textEmail => {
-              if (textEmail.trim().length == 0) {
-                setErrorEmail('*Vui lòng không để trống Email');
-              } else if (!validateEmail(textEmail)) {
-                setErrorEmail('*Vui lòng nhập đúng định dạng Email');
-              } else {
-                setErrorEmail('');
-                setEmail(textEmail);
-                return;
-              }
-              setEmail('');
+              setErrorEmail(validErrorEmail(textEmail));
+              setEmail(textEmail);
             }}
           />
           <View
-            style={{
-              backgroundColor: focusEmail ? colors.primaryColor : 'gray',
-              height: 2,
-            }}
+            style={[
+              styles.inputEmailUnderLine,
+              {backgroundColor: focusEmail ? colors.primaryColor : 'gray'},
+            ]}
           />
           {errorEmail != '' ? (
-            <Text
-              style={{
-                color: 'red',
-                marginLeft: 10,
-                fontSize: fontSizes.h5,
-              }}>
-              {errorEmail}
-            </Text>
+            <Text style={styles.errorText}>{errorEmail}</Text>
           ) : (
             <View />
           )}
-          <View
-            style={{justifyContent: 'center', marginBottom: 10, marginTop: 10}}>
+          <View style={styles.resInputPassView}>
             <TextInput
               onFocus={() => {
                 setFocusPass(true);
@@ -216,31 +152,14 @@ const RegisterScreen = props => {
               onBlur={() => {
                 setFocusPass(false);
               }}
-              style={{
-                fontSize: fontSizes.h3,
-                paddingLeft: 10,
-                paddingRight: 40,
-                color: 'black',
-              }}
+              style={styles.inputPass}
               secureTextEntry={hidePass ? true : false}
               placeholder="Mật khẩu"
+              value={password}
               placeholderTextColor={focusPass ? colors.primaryColor : 'gray'}
               onChangeText={textPassword => {
-                if (textPassword.trim().length == 0) {
-                  setErrorPassword('*Vui lòng không để trống mật khẩu');
-                } else if (validatePassword(textPassword)) {
-                  setErrorPassword('*Vui lòng không nhập những ký tự đặc biệt');
-                } else if (
-                  textPassword.trim().length < 6 ||
-                  textPassword.trim().length > 20
-                ) {
-                  setErrorPassword('*Vui lòng nhập mật khẩu 6-20 ký tự');
-                } else {
-                  setErrorPassword('');
-                  setPassword(textPassword);
-                  return;
-                }
-                setPassword('');
+                setErrorPassword(validErrorPass(textPassword));
+                setPassword(textPassword);
               }}
             />
             <Icon
@@ -250,63 +169,47 @@ const RegisterScreen = props => {
               name={hidePass ? 'eye-slash' : 'eye'}
               size={20}
               color={focusPass ? colors.primaryColor : 'gray'}
-              style={{position: 'absolute', right: 10}}
+              style={styles.iconShowPass}
             />
             <View
-              style={{
-                backgroundColor: focusPass ? colors.primaryColor : 'gray',
-                height: 2,
-              }}
+              style={[
+                styles.inputPassUnderline,
+                {backgroundColor: focusPass ? colors.primaryColor : 'gray'},
+              ]}
             />
             {errorPassword != '' ? (
-              <Text
-                style={{
-                  color: 'red',
-                  marginLeft: 10,
-                  fontSize: fontSizes.h5,
-                }}>
-                {errorPassword}
-              </Text>
+              <Text style={styles.errorText}>{errorPassword}</Text>
             ) : (
               <View />
             )}
           </View>
-
           <TouchableOpacity
-            disabled={email != '' && password != '' ? false : true}
+            disabled={!isValidRegister(email, password)}
             onPress={checkSignIn}
-            style={{
-              backgroundColor:
-                email != '' && password != ''
+            style={[
+              styles.resBtn,
+              {
+                backgroundColor: isValidRegister(email, password)
                   ? colors.primaryColor
                   : colors.blurColorBlack2,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 10,
-              marginTop: 10,
-            }}>
+              },
+            ]}>
             <Text
-              style={{
-                color: email != '' && password != '' ? 'white' : 'gray',
-                padding: 10,
-                fontSize: fontSizes.h3,
-              }}>
+              style={[
+                styles.resBtnText,
+                {
+                  color: isValidRegister(email, password) ? 'white' : 'gray',
+                },
+              ]}>
               Đăng ký
             </Text>
           </TouchableOpacity>
-          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <View style={styles.loginBtnView}>
             <TouchableOpacity
               onPress={() => {
                 navigate('LoginScreen');
               }}>
-              <Text
-                style={{
-                  color: colors.primaryColor,
-                  marginTop: 10,
-                  fontSize: fontSizes.h4,
-                }}>
-                Đăng nhập
-              </Text>
+              <Text style={styles.loginBtnText}>Đăng nhập</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -314,5 +217,98 @@ const RegisterScreen = props => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1, padding: 10},
+  iconBackView: {flexDirection: 'row'},
+  iconBack: {padding: 10},
+  titleTextRes: {color: 'black', fontSize: fontSizes.h1, alignSelf: 'center'},
+  loginGoogleView: {width: '90%', alignSelf: 'center', marginTop: 15},
+  loginGoogleBtn: {
+    backgroundColor: colors.blurColorBlack2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40,
+    borderRadius: 7,
+    justifyContent: 'center',
+  },
+  googleLogo: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
+    marginRight: 20,
+    position: 'absolute',
+    left: 5,
+  },
+  loginGoogleText: {
+    color: '#EB4132',
+    fontSize: fontSizes.h3,
+  },
+  permissionText: {
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 15,
+    fontSize: fontSizes.h6,
+  },
+  lineView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  line: {backgroundColor: 'gray', height: 1, flex: 1},
+  lineText: {
+    color: 'gray',
+    fontSize: fontSizes.h3,
+    fontWeight: 'bold',
+    marginHorizontal: 7,
+  },
+  resInputView: {width: '90%', alignSelf: 'center', marginTop: 20},
+  inputEmail: {
+    fontSize: fontSizes.h3,
+    paddingHorizontal: 10,
+    color: 'black',
+    marginTop: 10,
+  },
+  inputEmailUnderLine: {
+    height: 2,
+  },
+  errorText: {
+    color: 'red',
+    marginLeft: 10,
+    fontSize: fontSizes.h5,
+  },
+  resInputPassView: {
+    justifyContent: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  inputPass: {
+    fontSize: fontSizes.h3,
+    paddingLeft: 10,
+    paddingRight: 40,
+    color: 'black',
+  },
+  iconShowPass: {position: 'absolute', right: 10},
+  inputPassUnderline: {
+    height: 2,
+  },
+  resBtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  resBtnText: {
+    padding: 10,
+    fontSize: fontSizes.h3,
+  },
+  loginBtnView: {flexDirection: 'row', alignSelf: 'center'},
+  loginBtnText: {
+    color: colors.primaryColor,
+    marginTop: 10,
+    fontSize: fontSizes.h4,
+  },
+});
 
 export default RegisterScreen;
