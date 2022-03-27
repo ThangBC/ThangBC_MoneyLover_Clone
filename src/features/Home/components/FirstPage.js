@@ -19,7 +19,6 @@ const FirstPage = props => {
   const [trans, setTrans] = useState([]);
   const [totalCollect, setTotalCollect] = useState([]);
   const [totalSpent, setTotalSpent] = useState([]);
-  console.log(`Kết quả ${JSON.stringify(trans)}`);
 
   const handleTotalCollect = () => {
     let sum = 0;
@@ -51,14 +50,11 @@ const FirstPage = props => {
         if (doc.data().type == 'thu') {
           collect.push(doc.data().money);
         }
-      });
-      setTotalCollect(collect);
-
-      snapshot.docs.map(doc => {
         if (doc.data().type == 'chi') {
           spent.push(doc.data().money);
         }
       });
+      setTotalCollect(collect);
       setTotalSpent(spent);
     });
     return () => {

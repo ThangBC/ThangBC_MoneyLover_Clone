@@ -1,12 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-} from 'react-native';
+import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
 import {colors, fontSizes} from '../../../constraints/';
 import {validateMoney, validateCurrentDate} from '../../../utils/validations';
 import {
@@ -14,8 +7,6 @@ import {
   signInWithCredential,
   createUserWithEmailAndPassword,
   collection,
-  doc,
-  setDoc,
   db,
   addDoc,
 } from '../../../firebase/firebase';
@@ -25,8 +16,6 @@ const AddWalletScreen = props => {
   const {navigate, goBack} = navigation;
 
   const {email, password, googleCredential} = route.params;
-
-  console.log(googleCredential);
 
   const [nameWallet, setNameWallet] = useState('');
   const [currentMoney, setCurrentMoney] = useState('');
@@ -54,17 +43,6 @@ const AddWalletScreen = props => {
       .catch(err => {
         console.log(err);
       });
-    // const newUser = doc(collection(db, 'users'));
-    // await setDoc(newUser, {
-    //   id: user.uid,
-    //   email: user.email,
-    //   name: displayName,
-    //   accountType: user.providerData[0].providerId,
-    //   walletName: nameWallet,
-    //   moneyTotal: currentMoney,
-    //   createdAt: validateCurrentDate(new Date()),
-    // });
-    // navigate('UITab');
   };
 
   const handleRegister = () => {
@@ -185,6 +163,7 @@ const AddWalletScreen = props => {
             fontSize: fontSizes.h3,
             color: 'black',
           }}
+          maxLength={12}
           placeholder={'Số dư (Số tiền hiện có)'}
           placeholderTextColor={
             focusCurrentMoney ? colors.primaryColor : 'gray'

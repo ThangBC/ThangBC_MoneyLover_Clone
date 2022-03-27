@@ -21,6 +21,7 @@ import {
   getDocs,
   onSnapshot,
 } from '../../../firebase/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = props => {
   const {navigation, route} = props;
@@ -66,13 +67,23 @@ const HomeScreen = props => {
       collection(db, 'users'),
       where('id', '==', auth.currentUser?.uid),
     );
-    const unsubcribe = onSnapshot(q, snapshot => {
-      const infor = new Object();
-      snapshot.docs.map(doc => {
-        infor.nameWallet = doc.data().walletName;
-        infor.totalMoney = doc.data().moneyTotal;
-      });
-      setUser(infor);
+    const unsubcribe = onSnapshot(q, async snapshot => {
+      try {
+        const infor = new Object();
+        let getId = '';
+        let getmoneyTotal = '';
+        snapshot.docs.map(doc => {
+          infor.nameWallet = doc.data().walletName;
+          infor.totalMoney = doc.data().moneyTotal;
+          getId = doc.id;
+          getmoneyTotal = doc.data().moneyTotal;
+        });
+        setUser(infor);
+        await AsyncStorage.setItem('userId', getId);
+        await AsyncStorage.setItem('moneyTotal', getmoneyTotal.toString());
+      } catch (error) {
+        console.log(error);
+      }
     });
     return () => {
       unsubcribe();
