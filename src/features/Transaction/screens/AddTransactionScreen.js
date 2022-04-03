@@ -41,12 +41,14 @@ const AddTransactionScreen = props => {
   const [type, setType] = useState('Chọn nhóm');
   const [description, setDescription] = useState('Không có ghi chú!');
   const [dateText, setDateText] = useState(validateCurrentDate(new Date()));
+  const [disable, setDisable] = useState(false);
 
   const setDefaultValue = () => {
     setMoney('');
     setType('Chọn nhóm');
     setDescription('Không có ghi chú!');
     setDateText(validateCurrentDate(new Date()));
+    setDisable(false);
   };
 
   const onChange = (event, selectedDate) => {
@@ -67,6 +69,7 @@ const AddTransactionScreen = props => {
 
   const handleSubmit = async () => {
     try {
+      setDisable(true);
       const typeNameStr = type.slice(0, type.length - 4);
       const typeStr = type.slice(-3);
       const removeComma = money.split(',').join('');
@@ -100,6 +103,8 @@ const AddTransactionScreen = props => {
       goBack();
     } catch (error) {
       console.log(error);
+      alert('Có lỗi xảy ra, hãy thử lại');
+      setDisable(false);
     }
   };
 
@@ -119,7 +124,7 @@ const AddTransactionScreen = props => {
         />
         <Text style={styles.title}>Thêm giao dịch</Text>
         <TouchableOpacity
-          disabled={isValidAddTransaction(money, type)}
+          disabled={isValidAddTransaction(disable, money, type)}
           onPress={handleSubmit}>
           <Text style={styles.saveText}>Lưu</Text>
         </TouchableOpacity>

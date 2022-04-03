@@ -1,5 +1,7 @@
-const isValidCreateWallet = nameWallet => {
-  return nameWallet.trim().length >= 6 && nameWallet.trim().length <= 20
+const isValidCreateWallet = (disable, nameWallet) => {
+  return nameWallet.trim().length >= 6 &&
+    nameWallet.trim().length <= 20 &&
+    disable == false
     ? true
     : false;
 };
