@@ -6,9 +6,14 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints/';
-import {validateMoney, validateCurrentDate} from '../../../utils/validations';
+import {
+  validateMoney,
+  validateCurrentDate,
+  formatMoneyInput,
+} from '../../../utils/validations';
 import {
   isValidCreateWallet,
   validErrorNameWallet,
@@ -20,7 +25,10 @@ import {
   collection,
   db,
   addDoc,
+  doc,
+  setDoc,
 } from '../../../firebase/firebase';
+import moment from 'moment';
 
 const AddWalletScreen = props => {
   const {navigation, route} = props;
@@ -28,32 +36,54 @@ const AddWalletScreen = props => {
 
   const {email, password, googleCredential} = route.params;
 
-  const [nameWallet, setNameWallet] = useState('');
+  const [nameWallet, setNameWallet] = useState('Tien Mat');
   const [errorNameWallet, setErrorNameWallet] = useState('');
-  const [currentMoney, setCurrentMoney] = useState('0');
+  const [currentMoney, setCurrentMoney] = useState('');
 
   const [focusNameWallet, setFocusNameWallet] = useState(false);
   const [focusCurrentMoney, setFocusCurrentMoney] = useState(false);
 
-  const addFirestore = user => {
-    const getIndex = user.email.indexOf('@');
-    const displayName = user.email.substring(0, getIndex).toUpperCase();
-    const userCollRef = collection(db, 'users');
-    addDoc(userCollRef, {
-      id: user.uid,
-      email: user.email,
-      name: displayName,
-      accountType: user.providerData[0].providerId,
-      walletName: nameWallet,
-      moneyTotal: currentMoney,
-      createdAt: validateCurrentDate(new Date()),
-    })
-      .then(res => {
-        navigate('UITab');
+  const addFirestore = async user => {
+    try {
+      const getIndex = user.email.indexOf('@');
+      const displayName = user.email.substring(0, getIndex).toUpperCase();
+      const userCollRef = collection(db, 'users');
+      const removeComma = currentMoney.split(',').join('');
+      const moneyUpdate = removeComma - 0;
+      const dateText = moment().format('DD/MM/YYYY');
+
+      if (!moneyUpdate == 0) {
+        const transCollRef = doc(collection(db, 'transaction'));
+        await setDoc(transCollRef, {
+          id: transCollRef.id,
+          money: moneyUpdate,
+          type: 'thu',
+          typeName: 'Khác',
+          description: 'Số tiền hiện có',
+          date: dateText,
+          createdById: user.uid,
+        });
+      }
+
+      addDoc(userCollRef, {
+        id: user.uid,
+        email: user.email,
+        name: displayName,
+        accountType: user.providerData[0].providerId,
+        walletName: nameWallet,
+        firstMoney: moneyUpdate,
+        moneyTotal: moneyUpdate,
+        createdAt: validateCurrentDate(new Date()),
       })
-      .catch(err => {
-        console.log(err);
-      });
+        .then(res => {
+          navigate('UITab');
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleRegister = () => {
@@ -81,66 +111,100 @@ const AddWalletScreen = props => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerView}>
-        <Text style={styles.textTitle}>Đầu tiên, hãy tạo ví</Text>
-        <Text style={styles.textContent}>
-          MoneyLover giúp bạn ghi chép chi tiêu từ nhiều ví khác nhau. Mỗi ví
-          đại diện cho một nguồn tiền như Tiền mặt, Tài khoản ngân hàng
-        </Text>
-        <Image
-          source={require('../../../assets/wallet_icon.png')}
-          style={styles.logoWallet}
-        />
-        <TextInput //------------NAME WALLET INPUT-------------
-          onFocus={() => {
-            setFocusNameWallet(true);
-          }}
-          onBlur={() => {
-            setFocusNameWallet(false);
-          }}
-          onChangeText={text => {
-            setErrorNameWallet(validErrorNameWallet(text));
-            setNameWallet(text);
-          }}
-          style={[
-            styles.inputNameWallet,
-            {borderColor: focusNameWallet ? colors.primaryColor : 'gray'},
-          ]}
-          placeholder={'Tên ví'}
-          placeholderTextColor={focusNameWallet ? colors.primaryColor : 'gray'}
-          maxLength={20}
-        />
-        {errorNameWallet != '' ? (
-          <Text style={styles.errorText}>{errorNameWallet}</Text>
-        ) : (
-          <View />
-        )}
-
-        <TextInput //------------CURRENT MONEY INPUT-------------
-          onFocus={() => {
-            setFocusCurrentMoney(true);
-          }}
-          onBlur={() => {
-            setFocusCurrentMoney(false);
-          }}
-          value={currentMoney}
-          onChangeText={text => {
-            if (validateMoney(text) || text === '') {
-              setCurrentMoney(text === '' ? '0' : text);
+      <ScrollView>
+        <View style={styles.headerView}>
+          <Text style={styles.textTitle}>Đầu tiên, hãy tạo ví</Text>
+          <Text style={styles.textContent}>
+            MoneyLover giúp bạn ghi chép chi tiêu từ nhiều ví khác nhau. Mỗi ví
+            đại diện cho một nguồn tiền như Tiền mặt, Tài khoản ngân hàng
+          </Text>
+          <Image
+            source={require('../../../assets/wallet_icon.png')}
+            style={styles.logoWallet}
+          />
+          <Text //------------NAME WALLET INPUT-------------
+            style={{
+              color: focusNameWallet ? colors.primaryColor : 'gray',
+              alignSelf: 'flex-start',
+            }}>
+            Tên ví
+          </Text>
+          <TextInput
+            onFocus={() => {
+              setFocusNameWallet(true);
+            }}
+            onBlur={() => {
+              setFocusNameWallet(false);
+            }}
+            value={nameWallet}
+            onChangeText={text => {
+              setErrorNameWallet(validErrorNameWallet(text));
+              setNameWallet(text);
+            }}
+            style={[
+              styles.inputNameWallet,
+              {borderColor: focusNameWallet ? colors.primaryColor : 'gray'},
+            ]}
+            placeholder={'Tên ví'}
+            placeholderTextColor={
+              focusNameWallet ? colors.primaryColor : 'gray'
             }
-          }}
-          style={[
-            styles.inputMoney,
-            {borderColor: focusCurrentMoney ? colors.primaryColor : 'gray'},
-          ]}
-          maxLength={12}
-          placeholder={'Số dư (Số tiền hiện có)'}
-          placeholderTextColor={
-            focusCurrentMoney ? colors.primaryColor : 'gray'
-          }
-          keyboardType={'numeric'}
-        />
-      </View>
+            maxLength={20}
+          />
+          {errorNameWallet != '' ? (
+            <Text style={styles.errorText}>{errorNameWallet}</Text>
+          ) : (
+            <View />
+          )}
+          <Text style={{color: 'gray', alignSelf: 'flex-start', marginTop: 10}}>
+            Tên ví
+          </Text>
+
+          <TextInput //------------CURRENCY-------------
+            value={'Việt Nam Đồng'}
+            editable={false}
+            style={[
+              styles.inputMoney,
+              {
+                borderColor: 'gray',
+              },
+            ]}
+          />
+          <Text //------------CURRENT MONEY INPUT-------------
+            style={{
+              color: focusCurrentMoney ? colors.primaryColor : 'gray',
+              alignSelf: 'flex-start',
+              marginTop: 10,
+            }}>
+            Số dư
+          </Text>
+          <TextInput
+            onFocus={() => {
+              setFocusCurrentMoney(true);
+            }}
+            onBlur={() => {
+              setFocusCurrentMoney(false);
+            }}
+            value={currentMoney}
+            onChangeText={text => {
+              if (validateMoney(text) || text === '') {
+                setCurrentMoney(formatMoneyInput(text));
+              }
+            }}
+            style={[
+              styles.inputMoney,
+              {borderColor: focusCurrentMoney ? colors.primaryColor : 'gray'},
+            ]}
+            maxLength={15}
+            placeholder={'Nhập số tiền hiện có'}
+            placeholderTextColor={
+              focusCurrentMoney ? colors.primaryColor : 'gray'
+            }
+            keyboardType={'numeric'}
+          />
+        </View>
+        <View style={{marginVertical: 15}} />
+      </ScrollView>
 
       <View style={styles.footerView}>
         <TouchableOpacity

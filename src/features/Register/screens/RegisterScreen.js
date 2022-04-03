@@ -63,17 +63,21 @@ const RegisterScreen = props => {
   };
 
   const checkSignIn = async () => {
-    let isExist = false;
-    const querySnapshot = await getDocs(collection(db, 'users'));
-    querySnapshot.forEach(doc => {
-      if (doc.data().email == email) {
-        isExist = true;
+    try {
+      let isExist = false;
+      const querySnapshot = await getDocs(collection(db, 'users'));
+      querySnapshot.forEach(doc => {
+        if (doc.data().email == email) {
+          isExist = true;
+        }
+      });
+      if (isExist) {
+        alert('Tài khoản đã tồn tại, hãy đăng nhập!');
+      } else {
+        navigate('AddWalletScreen', {email: email, password: password});
       }
-    });
-    if (isExist) {
-      alert('Tài khoản đã tồn tại, hãy đăng nhập!');
-    } else {
-      navigate('AddWalletScreen', {email: email, password: password});
+    } catch (error) {
+      console.error(error);
     }
   };
 

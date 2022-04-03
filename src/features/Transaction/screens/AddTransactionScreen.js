@@ -12,7 +12,11 @@ import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
-import {validateMoney, validateCurrentDate} from '../../../utils/validations';
+import {
+  validateMoney,
+  validateCurrentDate,
+  formatMoneyInput,
+} from '../../../utils/validations';
 import {isValidAddTransaction} from '../components/validatitonTransaction';
 import {
   auth,
@@ -21,6 +25,7 @@ import {
   doc,
   setDoc,
   updateDoc,
+  getDocs,
 } from '../../../firebase/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -40,7 +45,7 @@ const AddTransactionScreen = props => {
   const setDefaultValue = () => {
     setMoney('');
     setType('Chọn nhóm');
-    setDescription('Không có ghi chú');
+    setDescription('Không có ghi chú!');
     setDateText(validateCurrentDate(new Date()));
   };
 
@@ -64,25 +69,31 @@ const AddTransactionScreen = props => {
     try {
       const typeNameStr = type.slice(0, type.length - 4);
       const typeStr = type.slice(-3);
-
+      const removeComma = money.split(',').join('');
+      const moneyUpdate = removeComma - 0;
+      console.log(`Remove Comma: ${removeComma}`);
+      console.log(`Money Updated: ${moneyUpdate}`);
+      // add Transaction
       const transCollRef = doc(collection(db, 'transaction'));
       await setDoc(transCollRef, {
         id: transCollRef.id,
-        money: money,
+        money: moneyUpdate,
         type: typeStr,
         typeName: typeNameStr,
         description: description,
         date: dateText,
         createdById: auth.currentUser?.uid,
       });
+
+      // update User moneyTotal
       const valUserId = await AsyncStorage.getItem('userId');
       const valMoneyTotal = await AsyncStorage.getItem('moneyTotal');
       const userRef = doc(db, 'users', valUserId);
       await updateDoc(userRef, {
         moneyTotal:
           typeStr == 'thu'
-            ? parseInt(valMoneyTotal) + parseInt(money)
-            : parseInt(valMoneyTotal) - parseInt(money),
+            ? parseInt(valMoneyTotal) + parseInt(moneyUpdate)
+            : parseInt(valMoneyTotal) - parseInt(moneyUpdate),
         updatedAt: validateCurrentDate(new Date()),
       });
       setDefaultValue();
@@ -119,7 +130,7 @@ const AddTransactionScreen = props => {
           <View style={styles.space} />
           <View style={styles.inputView}>
             <TextInput
-              maxLength={10}
+              maxLength={13}
               style={styles.inputMoney}
               placeholder={'0 đ'}
               keyboardType={'numeric'}
@@ -127,7 +138,7 @@ const AddTransactionScreen = props => {
               value={money}
               onChangeText={text => {
                 if (validateMoney(text) || text === '') {
-                  setMoney(text);
+                  setMoney(formatMoneyInput(text));
                 }
               }}
             />

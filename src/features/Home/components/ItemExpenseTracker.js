@@ -1,5 +1,12 @@
-import React from 'react';
-import {Text, View, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+} from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import {
   convertDate,
@@ -7,44 +14,129 @@ import {
   convertYear,
   convertDay,
 } from './validationsHome';
+import {
+  auth,
+  collection,
+  db,
+  query,
+  where,
+  onSnapshot,
+} from '../../../firebase/firebase';
+import {formatMoney} from '../../../utils/validations';
+import {handleTotalSpend, handleTotalCollect} from './validationsHome';
 
 const ItemExpenseTracker = props => {
   const {index, item} = props;
 
+  const [itemChild, setItemChild] = useState([]);
+  const [collect, setCollect] = useState([]);
+  const [spend, setSpend] = useState([]);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, 'transaction'),
+      where('createdById', '==', auth.currentUser?.uid),
+    );
+    const unsubcribe = onSnapshot(q, snapshot => {
+      let itemChild = [];
+      let collect = [];
+      let spend = [];
+      snapshot.docs.map(doc => {
+        if (doc.data().date == item) {
+          itemChild.push({
+            id: doc.data().id,
+            typeName: doc.data().typeName,
+            money: doc.data().money,
+            type: doc.data().type,
+            description: doc.data().description,
+          });
+          if (doc.data().type == 'thu') {
+            collect.push(doc.data().money);
+          }
+          if (doc.data().type == 'chi') {
+            spend.push(doc.data().money);
+          }
+        }
+        setItemChild(itemChild);
+        setCollect(collect);
+        setSpend(spend);
+      });
+    });
+    return () => {
+      unsubcribe();
+    };
+  }, []);
+
   return (
     <TouchableOpacity disabled={true}>
-      <View>
-        <View style={[styles.itemTransView, {marginTop: index == 0 ? 35 : 0}]}>
-          <View style={styles.dateView}>
-            <Text style={styles.date}>{convertDate(item)}</Text>
-            <View style={styles.dayView}>
-              <Text style={styles.day}>{convertDay(item)}</Text>
-              <Text style={styles.monthYear}>
-                tháng {convertMonth(item)} {convertYear(item)}
-              </Text>
-            </View>
-            <Text style={styles.moneyTotal}>
-              {item.type == 'chi' ? '-' : '+'}
-              {item.money}₫
+      <View style={[styles.itemTransView, {marginTop: index == 0 ? 35 : 0}]}>
+        <View style={styles.dateView}>
+          <Text style={styles.date}>{convertDate(item)}</Text>
+          <View style={styles.dayView}>
+            <Text style={styles.day}>{convertDay(item)}</Text>
+            <Text style={styles.monthYear}>
+              tháng {convertMonth(item)} {convertYear(item)}
             </Text>
           </View>
-          <View style={styles.line} />
-          <View style={styles.typeView}>
-            <Text style={styles.type}>{item.typeName}</Text>
-            <Text
-              style={[
-                styles.money,
-                {
-                  color:
-                    item.type == 'chi'
-                      ? colors.spentColor
-                      : colors.collectColor,
-                },
-              ]}>
-              {item.money}
+          <View style={styles.moneyTotalView}>
+            <Text style={styles.moneyTotal} numberOfLines={1}>
+              {formatMoney(
+                handleTotalCollect(collect) - handleTotalSpend(spend),
+              )}
+              ₫
             </Text>
           </View>
         </View>
+        <View style={styles.line} />
+        <FlatList
+          data={itemChild}
+          keyExtractor={item => item.id}
+          renderItem={({item, index}) => {
+            return (
+              <View style={styles.typeView} key={item.id}>
+                <View style={styles.itemIconView}>
+                  <Image
+                    source={require('../../../assets/item_icon.png')}
+                    style={styles.itemIcon}
+                  />
+                </View>
+
+                <View style={styles.typeDesView}>
+                  <Text style={styles.type}>{item.typeName}</Text>
+                  <Text
+                    style={[
+                      styles.des,
+                      {
+                        display:
+                          item.description == 'Không có ghi chú!'
+                            ? 'none'
+                            : 'flex',
+                      },
+                    ]}
+                    numberOfLines={1}>
+                    {item.description}
+                  </Text>
+                </View>
+                <View style={styles.moneyView}>
+                  <Text
+                    style={[
+                      styles.money,
+                      {
+                        color:
+                          item.type == 'chi'
+                            ? colors.spentColor
+                            : colors.collectColor,
+                      },
+                    ]}
+                    numberOfLines={1}>
+                    {item.type == 'chi' ? '-' : '+'}
+                    {formatMoney(item.money)}
+                  </Text>
+                </View>
+              </View>
+            );
+          }}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -58,11 +150,20 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   dateView: {flexDirection: 'row', alignItems: 'center'},
-  date: {color: 'black', fontSize: fontSizes.h1},
-  dayView: {flex: 1, marginLeft: 10},
+  date: {
+    color: 'black',
+    fontSize: fontSizes.h1,
+    flex: 0.1,
+  },
+  dayView: {flex: 0.5, marginLeft: 5},
   day: {color: 'black'},
-  monthYear: {color: 'gray'},
-  moneyTotal: {color: 'black', fontSize: fontSizes.h3},
+  monthYear: {color: 'gray', fontSize: fontSizes.h5},
+  moneyTotal: {
+    color: 'black',
+    fontSize: fontSizes.h3,
+    textAlign: 'right',
+  },
+  moneyTotalView: {flex: 0.4},
   line: {
     height: 1,
     backgroundColor: colors.blurColorBlack2,
@@ -71,14 +172,23 @@ const styles = StyleSheet.create({
   },
   typeView: {
     flexDirection: 'row',
-    marginTop: 5,
-    justifyContent: 'space-between',
+    marginTop: 10,
+    alignItems: 'center',
+    marginBottom: 5,
   },
-  type: {color: 'black', fontSize: fontSizes.h3, flex: 1},
+  itemIcon: {width: 30, height: 30},
+  itemIconView: {flex: 0.1},
+  type: {color: 'black', fontSize: fontSizes.h3},
+  des: {color: 'gray', fontSize: fontSizes.h5},
+  typeDesView: {
+    flex: 0.5,
+    marginLeft: 5,
+  },
   money: {
     fontSize: fontSizes.h3,
-    marginLeft: 10,
+    textAlign: 'right',
   },
+  moneyView: {flex: 0.4},
 });
 
 export default ItemExpenseTracker;

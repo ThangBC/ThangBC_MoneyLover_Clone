@@ -66,7 +66,19 @@ const LoginScreen = props => {
         navigate('UITab');
       })
       .catch(err => {
-        alert(err.message);
+        switch (err.code) {
+          case 'auth/too-many-requests':
+            alert('Bạn đăng nhập quá nhiều, hãy thử lại sau');
+            break;
+          case 'auth/wrong-password':
+            alert('Sai mật khẩu');
+            break;
+          case 'auth/user-not-found':
+            alert('Người dùng không tồn tại, hãy đăng ký');
+            break;
+          default:
+            alert('Có lỗi xảy ra, hãy thử lại sau');
+        }
       });
   };
 
