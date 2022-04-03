@@ -42,6 +42,7 @@ const AddWalletScreen = props => {
 
   const [focusNameWallet, setFocusNameWallet] = useState(false);
   const [focusCurrentMoney, setFocusCurrentMoney] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   const addFirestore = async user => {
     try {
@@ -87,6 +88,7 @@ const AddWalletScreen = props => {
   };
 
   const handleRegister = () => {
+    setDisable(true);
     if (googleCredential != undefined) {
       const res = signInWithCredential(auth, googleCredential);
       res
@@ -105,6 +107,8 @@ const AddWalletScreen = props => {
         })
         .catch(err => {
           console.log(err.message);
+          alert('Có lỗi xảy ra, hãy thử lại!');
+          setDisable(false);
         });
     }
   };
@@ -209,7 +213,7 @@ const AddWalletScreen = props => {
       <View style={styles.footerView}>
         <TouchableOpacity
           onPress={handleRegister}
-          disabled={!isValidCreateWallet(nameWallet)}
+          disabled={!isValidCreateWallet(disable, nameWallet)}
           style={styles.createWalletBtn}>
           <Text style={styles.createWalletBtnText}>TẠO VÍ</Text>
         </TouchableOpacity>
