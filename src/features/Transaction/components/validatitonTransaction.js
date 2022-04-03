@@ -1,5 +1,7 @@
 const isValidAddTransaction = (money, type) => {
-  if (money == '' || type == 'Chọn nhóm') {
+  const removeComma = money.split(',').join('');
+  const checkZeroMoney = removeComma - 0;
+  if (checkZeroMoney == 0 || type == 'Chọn nhóm') {
     return true;
   }
   return false;

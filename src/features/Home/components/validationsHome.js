@@ -1,4 +1,5 @@
 import {validateCurrentDate} from '../../../utils/validations';
+import moment from 'moment';
 
 const handleTotalCollect = totalCollect => {
   let sum = 0;
@@ -17,21 +18,23 @@ const handleTotalSpend = totalSpent => {
 };
 
 const convertDate = item => {
-  return item.date.slice(0, 2);
+  return item.slice(0, 2);
 };
 const convertMonth = item => {
-  return item.date.slice(3, -5);
+  return item.slice(3, -5);
 };
 const convertYear = item => {
-  return item.date.slice(-4);
+  return item.slice(-4);
 };
 
 const convertDay = item => {
-  return item.date == validateCurrentDate(new Date())
-    ? 'Hôm nay'
-    : item.date > validateCurrentDate(new Date())
+  const currentDate = moment(validateCurrentDate(new Date()), 'DD/MM/YYYY');
+  const firebaseDate = moment(item, 'DD/MM/YYYY');
+  return currentDate > firebaseDate
+    ? 'Các ngày trước'
+    : currentDate < firebaseDate
     ? 'Tương lai'
-    : 'Các ngày trước';
+    : 'Hôm nay';
 };
 
 export {

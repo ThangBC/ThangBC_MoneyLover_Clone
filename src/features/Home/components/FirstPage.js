@@ -3,6 +3,7 @@ import {Text, View, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import ItemExpenseTracker from './ItemExpenseTracker';
 import {handleTotalSpend, handleTotalCollect} from './validationsHome';
+import {formatMoney} from '../../../utils/validations';
 import {
   auth,
   collection,
@@ -11,15 +12,17 @@ import {
   where,
   onSnapshot,
 } from '../../../firebase/firebase';
+import moment from 'moment';
 
 const FirstPage = props => {
   const {navigation} = props;
   const {navigate, goBack} = navigation;
 
-  const [trans, setTrans] = useState([]);
   const [totalCollect, setTotalCollect] = useState([]);
   const [totalSpent, setTotalSpent] = useState([]);
+  const [itemTrans, setItemTrans] = useState([]);
 
+  //----------- GET TRANSACTION ----------------
   useEffect(() => {
     const q = query(
       collection(db, 'transaction'),
@@ -28,7 +31,7 @@ const FirstPage = props => {
     const unsubcribe = onSnapshot(q, snapshot => {
       const collect = [];
       const spent = [];
-      setTrans(snapshot.docs.map(doc => doc.data()));
+      const items = [];
 
       snapshot.docs.map(doc => {
         if (doc.data().type == 'thu') {
@@ -37,7 +40,11 @@ const FirstPage = props => {
         if (doc.data().type == 'chi') {
           spent.push(doc.data().money);
         }
+        items.push(doc.data().date);
       });
+      setItemTrans(
+        items.filter((item, index) => items.indexOf(item) === index),
+      );
       setTotalCollect(collect);
       setTotalSpent(spent);
     });
@@ -52,16 +59,21 @@ const FirstPage = props => {
         <View style={styles.totalCollectView}>
           <Text style={styles.totalCollectText}>Tiền vào</Text>
           <Text style={styles.totalCollect}>
-            {handleTotalCollect(totalCollect)}₫
+            {formatMoney(handleTotalCollect(totalCollect))}₫
           </Text>
         </View>
         <View style={styles.totalSpentView}>
           <Text style={styles.totalSpentText}>Tiền ra</Text>
-          <Text style={styles.totalSpent}>{handleTotalSpend(totalSpent)}₫</Text>
+          <Text style={styles.totalSpent}>
+            {formatMoney(handleTotalSpend(totalSpent))}₫
+          </Text>
         </View>
         <View style={styles.line} />
         <Text style={styles.totalMoney}>
-          {handleTotalCollect(totalCollect) - handleTotalSpend(totalSpent)}₫
+          {formatMoney(
+            handleTotalCollect(totalCollect) - handleTotalSpend(totalSpent),
+          )}
+          ₫
         </Text>
         <View style={styles.statisticsBtnView}>
           <TouchableOpacity
@@ -76,11 +88,13 @@ const FirstPage = props => {
         </View>
       </View>
       <FlatList
-        data={trans}
-        keyExtractor={item => item.id}
-        renderItem={({item, index}) => (
-          <ItemExpenseTracker item={item} index={index} key={item.id} />
+        data={itemTrans.sort(
+          (a, b) => moment(b, 'DD/MM/YYYY') - moment(a, 'DD/MM/YYYY'),
         )}
+        keyExtractor={item => item}
+        renderItem={({item, index}) => {
+          return <ItemExpenseTracker item={item} index={index} key={item} />;
+        }}
       />
     </View>
   );

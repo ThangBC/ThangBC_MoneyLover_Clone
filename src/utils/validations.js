@@ -9,11 +9,28 @@ const validatePassword = textInputPassword => {
 };
 
 const validateMoney = textInputMoney => {
-  return /^\d+$/.test(textInputMoney);
+  return /^[0-9,]*$/.test(textInputMoney);
 };
 
 const validateCurrentDate = textInputDate => {
   return moment(textInputDate).format('DD/MM/YYYY');
 };
 
-export {validateEmail, validatePassword, validateMoney, validateCurrentDate};
+const formatMoney = inputMoney => {
+  return inputMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+};
+
+const formatMoneyInput = inputMoney => {
+  let num = inputMoney.replace(/,/gi, '');
+  let num2 = num.replace(/\d(?=(?:\d{3})+$)/g, '$&,');
+  return num2;
+};
+
+export {
+  validateEmail,
+  validatePassword,
+  validateMoney,
+  validateCurrentDate,
+  formatMoney,
+  formatMoneyInput,
+};

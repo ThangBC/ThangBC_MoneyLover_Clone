@@ -22,6 +22,7 @@ import {
   onSnapshot,
 } from '../../../firebase/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {formatMoney} from '../../../utils/validations';
 
 const HomeScreen = props => {
   const {navigation, route} = props;
@@ -75,7 +76,7 @@ const HomeScreen = props => {
         let getmoneyTotal = '';
         snapshot.docs.map(doc => {
           infor.nameWallet = doc.data().walletName;
-          infor.totalMoney = doc.data().moneyTotal;
+          infor.totalMoney = formatMoney(doc.data().moneyTotal);
           getId = doc.id;
           getmoneyTotal = doc.data().moneyTotal;
         });
