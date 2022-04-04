@@ -1,3 +1,3 @@
-import UIHeader from './UIHeader';
+import UILoading from './UILoading';
 
-export {UIHeader};
+export {UILoading};

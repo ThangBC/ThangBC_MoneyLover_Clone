@@ -1,12 +1,13 @@
 import {validateEmail, validatePassword} from '../../../utils/validations';
 
-const isValidRegister = (email, password) => {
+const isValidRegister = (disable, email, password) => {
   return email.trim().length != 0 &&
     password.trim().length != 0 &&
     validateEmail(email) &&
     !validatePassword(password) &&
     password.trim().length >= 6 &&
-    password.trim().length <= 20
+    password.trim().length <= 20 &&
+    disable == false
     ? true
     : false;
 };

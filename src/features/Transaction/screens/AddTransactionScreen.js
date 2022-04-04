@@ -28,6 +28,7 @@ import {
   getDocs,
 } from '../../../firebase/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {UILoading} from '../../../components/';
 
 const AddTransactionScreen = props => {
   const {navigation, route} = props;
@@ -41,6 +42,7 @@ const AddTransactionScreen = props => {
   const [type, setType] = useState('Chọn nhóm');
   const [description, setDescription] = useState('Không có ghi chú!');
   const [dateText, setDateText] = useState(validateCurrentDate(new Date()));
+  const [isModalVisible, setModalVisible] = useState(false);
   const [disable, setDisable] = useState(false);
 
   const setDefaultValue = () => {
@@ -48,6 +50,7 @@ const AddTransactionScreen = props => {
     setType('Chọn nhóm');
     setDescription('Không có ghi chú!');
     setDateText(validateCurrentDate(new Date()));
+    setModalVisible(false);
     setDisable(false);
   };
 
@@ -69,6 +72,7 @@ const AddTransactionScreen = props => {
 
   const handleSubmit = async () => {
     try {
+      setModalVisible(true);
       setDisable(true);
       const typeNameStr = type.slice(0, type.length - 4);
       const typeStr = type.slice(-3);
@@ -104,6 +108,7 @@ const AddTransactionScreen = props => {
     } catch (error) {
       console.log(error);
       alert('Có lỗi xảy ra, hãy thử lại');
+      setModalVisible(false);
       setDisable(false);
     }
   };
@@ -223,6 +228,7 @@ const AddTransactionScreen = props => {
           )}
         </View>
       </View>
+      <UILoading isModalVisible={isModalVisible} />
     </SafeAreaView>
   );
 };

@@ -23,6 +23,7 @@ import {
   GoogleAuthProvider,
   GoogleSignin,
 } from '../../../firebase/firebase';
+import {UILoading} from '../../../components/';
 
 const LoginScreen = props => {
   const {navigation, route} = props;
@@ -38,6 +39,8 @@ const LoginScreen = props => {
   const [hidePass, setHidePass] = useState(true);
   const [focusEmail, setFocusEmail] = useState(false);
   const [focusPass, setFocusPass] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -59,13 +62,19 @@ const LoginScreen = props => {
   };
 
   const handleLogin = () => {
+    setModalVisible(true);
+    setDisable(true);
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log(user.email);
+        setModalVisible(false);
+        setDisable(false);
         navigate('UITab');
       })
       .catch(err => {
+        setModalVisible(false);
+        setDisable(false);
         switch (err.code) {
           case 'auth/too-many-requests':
             alert('Bạn đăng nhập quá nhiều, hãy thử lại sau');
@@ -194,12 +203,12 @@ const LoginScreen = props => {
           </View>
 
           <TouchableOpacity
-            disabled={!isValidLogin(email, password)}
+            disabled={!isValidLogin(disable, email, password)}
             onPress={handleLogin}
             style={[
               styles.loginBtn,
               {
-                backgroundColor: isValidLogin(email, password)
+                backgroundColor: isValidLogin(disable, email, password)
                   ? colors.primaryColor
                   : colors.blurColorBlack2,
               },
@@ -208,7 +217,9 @@ const LoginScreen = props => {
               style={[
                 styles.loginBtnText,
                 {
-                  color: isValidLogin(email, password) ? 'white' : 'gray',
+                  color: isValidLogin(disable, email, password)
+                    ? 'white'
+                    : 'gray',
                 },
               ]}>
               Đăng nhập
@@ -229,6 +240,7 @@ const LoginScreen = props => {
             </TouchableOpacity>
           </View>
         </View>
+        <UILoading isModalVisible={isModalVisible} />
       </ScrollView>
     </SafeAreaView>
   );

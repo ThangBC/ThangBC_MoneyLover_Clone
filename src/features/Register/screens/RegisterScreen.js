@@ -25,6 +25,7 @@ import {
   getDocs,
   db,
 } from '../../../firebase/firebase';
+import {UILoading} from '../../../components/';
 
 const RegisterScreen = props => {
   const {navigation, route} = props;
@@ -40,6 +41,8 @@ const RegisterScreen = props => {
   const [hidePass, setHidePass] = useState(true);
   const [focusEmail, setFocusEmail] = useState(false);
   const [focusPass, setFocusPass] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -64,6 +67,8 @@ const RegisterScreen = props => {
 
   const checkSignIn = async () => {
     try {
+      setModalVisible(true);
+      setDisable(true);
       let isExist = false;
       const querySnapshot = await getDocs(collection(db, 'users'));
       querySnapshot.forEach(doc => {
@@ -74,10 +79,15 @@ const RegisterScreen = props => {
       if (isExist) {
         alert('Tài khoản đã tồn tại, hãy đăng nhập!');
       } else {
+        setModalVisible(false);
+        setDisable(false);
         navigate('AddWalletScreen', {email: email, password: password});
       }
     } catch (error) {
       console.error(error);
+      setModalVisible(false);
+      setDisable(false);
+      alert('Có lỗi xảy ra, hãy thử lại!');
     }
   };
 
@@ -122,6 +132,8 @@ const RegisterScreen = props => {
         <View //---------REGISTER_EMAIL&PASSWORD-----------
           style={styles.resInputView}>
           <TextInput
+            keyboardType="email-address"
+            autoCapitalize="none"
             onFocus={() => {
               setFocusEmail(true);
             }}
@@ -188,12 +200,12 @@ const RegisterScreen = props => {
             )}
           </View>
           <TouchableOpacity
-            disabled={!isValidRegister(email, password)}
+            disabled={!isValidRegister(disable, email, password)}
             onPress={checkSignIn}
             style={[
               styles.resBtn,
               {
-                backgroundColor: isValidRegister(email, password)
+                backgroundColor: isValidRegister(disable, email, password)
                   ? colors.primaryColor
                   : colors.blurColorBlack2,
               },
@@ -202,7 +214,9 @@ const RegisterScreen = props => {
               style={[
                 styles.resBtnText,
                 {
-                  color: isValidRegister(email, password) ? 'white' : 'gray',
+                  color: isValidRegister(disable, email, password)
+                    ? 'white'
+                    : 'gray',
                 },
               ]}>
               Đăng ký
@@ -217,6 +231,7 @@ const RegisterScreen = props => {
             </TouchableOpacity>
           </View>
         </View>
+        <UILoading isModalVisible={isModalVisible} />
       </ScrollView>
     </SafeAreaView>
   );
