@@ -29,6 +29,7 @@ import {
   setDoc,
 } from '../../../firebase/firebase';
 import moment from 'moment';
+import {UILoading} from '../../../components/';
 
 const AddWalletScreen = props => {
   const {navigation, route} = props;
@@ -42,6 +43,7 @@ const AddWalletScreen = props => {
 
   const [focusNameWallet, setFocusNameWallet] = useState(false);
   const [focusCurrentMoney, setFocusCurrentMoney] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [disable, setDisable] = useState(false);
 
   const addFirestore = async user => {
@@ -77,6 +79,7 @@ const AddWalletScreen = props => {
         createdAt: validateCurrentDate(new Date()),
       })
         .then(res => {
+          setModalVisible(false);
           navigate('UITab');
         })
         .catch(err => {
@@ -88,6 +91,7 @@ const AddWalletScreen = props => {
   };
 
   const handleRegister = () => {
+    setModalVisible(true);
     setDisable(true);
     if (googleCredential != undefined) {
       const res = signInWithCredential(auth, googleCredential);
@@ -108,6 +112,7 @@ const AddWalletScreen = props => {
         .catch(err => {
           console.log(err.message);
           alert('Có lỗi xảy ra, hãy thử lại!');
+          setModalVisible(false);
           setDisable(false);
         });
     }
@@ -218,6 +223,7 @@ const AddWalletScreen = props => {
           <Text style={styles.createWalletBtnText}>TẠO VÍ</Text>
         </TouchableOpacity>
       </View>
+      <UILoading isModalVisible={isModalVisible} />
     </View>
   );
 };
