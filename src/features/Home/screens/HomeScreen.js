@@ -121,7 +121,13 @@ const HomeScreen = props => {
         renderScene={({route, jumpTo}) => {
           switch (route.key) {
             case 'first':
-              return <FirstPage navigation={props.navigation} route={route} />;
+              return (
+                <FirstPage
+                  navigation={props.navigation}
+                  route={route}
+                  nameWallet={user.nameWallet}
+                />
+              );
             case 'second':
               return <SecondPage navigation={props.navigation} route={route} />;
             case 'third':

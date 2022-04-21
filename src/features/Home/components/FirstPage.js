@@ -15,7 +15,7 @@ import {
 import moment from 'moment';
 
 const FirstPage = props => {
-  const {navigation} = props;
+  const {navigation, route, nameWallet} = props;
   const {navigate, goBack} = navigation;
 
   const [totalCollect, setTotalCollect] = useState([]);
@@ -93,7 +93,16 @@ const FirstPage = props => {
         )}
         keyExtractor={item => item}
         renderItem={({item, index}) => {
-          return <ItemExpenseTracker item={item} index={index} key={item} />;
+          return (
+            <ItemExpenseTracker
+              date={item}
+              index={index}
+              key={item}
+              navigation={props.navigation}
+              route={props.route}
+              nameWallet={nameWallet}
+            />
+          );
         }}
       />
     </View>

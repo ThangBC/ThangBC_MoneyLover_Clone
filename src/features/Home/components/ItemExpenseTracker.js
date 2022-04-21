@@ -26,7 +26,9 @@ import {formatMoney} from '../../../utils/validations';
 import {handleTotalSpend, handleTotalCollect} from './validationsHome';
 
 const ItemExpenseTracker = props => {
-  const {index, item} = props;
+  const {navigation, route, nameWallet} = props;
+  const {navigate, goBack} = navigation;
+  const {index, date} = props;
 
   const [itemChild, setItemChild] = useState([]);
   const [collect, setCollect] = useState([]);
@@ -42,7 +44,7 @@ const ItemExpenseTracker = props => {
       let collect = [];
       let spend = [];
       snapshot.docs.map(doc => {
-        if (doc.data().date == item) {
+        if (doc.data().date == date) {
           itemChild.push({
             id: doc.data().id,
             typeName: doc.data().typeName,
@@ -68,31 +70,39 @@ const ItemExpenseTracker = props => {
   }, []);
 
   return (
-    <TouchableOpacity disabled={true}>
-      <View style={[styles.itemTransView, {marginTop: index == 0 ? 35 : 0}]}>
-        <View style={styles.dateView}>
-          <Text style={styles.date}>{convertDate(item)}</Text>
-          <View style={styles.dayView}>
-            <Text style={styles.day}>{convertDay(item)}</Text>
-            <Text style={styles.monthYear}>
-              tháng {convertMonth(item)} {convertYear(item)}
-            </Text>
-          </View>
-          <View style={styles.moneyTotalView}>
-            <Text style={styles.moneyTotal} numberOfLines={1}>
-              {formatMoney(
-                handleTotalCollect(collect) - handleTotalSpend(spend),
-              )}
-              ₫
-            </Text>
-          </View>
+    <View style={[styles.itemTransView, {marginTop: index == 0 ? 35 : 0}]}>
+      <View style={styles.dateView}>
+        <Text style={styles.date}>{convertDate(date)}</Text>
+        <View style={styles.dayView}>
+          <Text style={styles.day}>{convertDay(date)}</Text>
+          <Text style={styles.monthYear}>
+            tháng {convertMonth(date)} {convertYear(date)}
+          </Text>
         </View>
-        <View style={styles.line} />
-        <FlatList
-          data={itemChild}
-          keyExtractor={item => item.id}
-          renderItem={({item, index}) => {
-            return (
+        <View style={styles.moneyTotalView}>
+          <Text style={styles.moneyTotal} numberOfLines={1}>
+            {formatMoney(handleTotalCollect(collect) - handleTotalSpend(spend))}
+            ₫
+          </Text>
+        </View>
+      </View>
+      <View style={styles.line} />
+      <FlatList
+        data={itemChild}
+        keyExtractor={item => item.id}
+        renderItem={({item, index}) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                navigate('ShowDetailTransScreen', {
+                  typeName: item.typeName,
+                  des: item.description,
+                  money: item.money,
+                  date: date,
+                  type: item.type,
+                  nameWallet: nameWallet,
+                });
+              }}>
               <View style={styles.typeView} key={item.id}>
                 <View style={styles.itemIconView}>
                   <Image
@@ -134,11 +144,11 @@ const ItemExpenseTracker = props => {
                   </Text>
                 </View>
               </View>
-            );
-          }}
-        />
-      </View>
-    </TouchableOpacity>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
   );
 };
 
