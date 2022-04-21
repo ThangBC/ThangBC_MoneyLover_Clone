@@ -6,18 +6,21 @@ import {
   SafeAreaView,
   TextInput,
   Platform,
+  Image,
 } from 'react-native';
 import {colors, fontSizes} from '../../../constraints';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
+import {formatMoney, validateCurrentDate} from '../../../utils/validations';
 
 const ShowDetailTransScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
+  const {typeName, des, money, date, type, nameWallet} = route.params;
   return (
     <SafeAreaView style={{flex: 1}}>
-      {/* <View //-----------HEADER----------------
+      <View //-----------HEADER----------------
         style={{
           height: 55,
           flexDirection: 'row',
@@ -93,34 +96,71 @@ const ShowDetailTransScreen = props => {
           }}>
           <View style={{flex: 0.1}} />
           <Text style={{color: 'black', fontSize: fontSizes.h2, flex: 0.9}}>
-            Sửa trang trí nhà
+            {typeName}
           </Text>
         </View>
         <View style={{flexDirection: 'row', marginVertical: 20}}>
           <View style={{flex: 0.1}} />
           <Text
             style={{
-              color: colors.spentColor,
+              color: type == 'chi' ? colors.spentColor : colors.collectColor,
               fontSize: fontSizes.h2,
               flex: 0.9,
             }}>
-            2,000,000 <Text style={{textDecorationLine: 'underline'}}>đ</Text>
+            {formatMoney(money)}
+            <Text style={{textDecorationLine: 'underline'}}>đ</Text>
           </Text>
         </View>
+        {des == 'Không có ghi chú!' ? (
+          <View />
+        ) : (
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: 10,
+            }}>
+            <View style={{flex: 0.1, justifyContent: 'center'}}>
+              <Icon name="grip-lines" size={20} color={'black'} />
+            </View>
+
+            <Text style={{color: 'gray', fontSize: fontSizes.h4, flex: 0.9}}>
+              {des}
+            </Text>
+          </View>
+        )}
+
         <View
           style={{
             flexDirection: 'row',
             marginBottom: 10,
+            marginTop: des == 'Không có ghi chú!' ? 0 : 10,
           }}>
           <View style={{flex: 0.1, justifyContent: 'center'}}>
             <Icon name="calendar" size={20} color={'black'} />
           </View>
 
           <Text style={{color: 'black', fontSize: fontSizes.h3, flex: 0.9}}>
-            Hôm nay
+            {validateCurrentDate(new Date()) === date ? 'Hôm nay' : date}
           </Text>
         </View>
-      </View> */}
+        <View
+          style={{
+            flexDirection: 'row',
+            marginBottom: 10,
+            marginTop: 10,
+          }}>
+          <View style={{flex: 0.1, justifyContent: 'center'}}>
+            <Image
+              source={require('../../../assets/wallet_icon.png')}
+              style={{width: 20, height: 20}}
+            />
+          </View>
+
+          <Text style={{color: 'black', fontSize: fontSizes.h3, flex: 0.9}}>
+            {nameWallet}
+          </Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
