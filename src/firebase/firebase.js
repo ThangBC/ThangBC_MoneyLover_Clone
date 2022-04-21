@@ -26,6 +26,7 @@ import {
   initializeFirestore,
   getDoc,
   updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 
 import {
@@ -77,4 +78,5 @@ export {
   onSnapshot,
   getDoc,
   updateDoc,
+  deleteDoc,
 };
