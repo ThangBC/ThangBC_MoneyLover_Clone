@@ -95,6 +95,7 @@ const ItemExpenseTracker = props => {
             <TouchableOpacity
               onPress={() => {
                 navigate('ShowDetailTransScreen', {
+                  idTrans: item.id,
                   typeName: item.typeName,
                   des: item.description,
                   money: item.money,

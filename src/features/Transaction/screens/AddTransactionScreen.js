@@ -78,8 +78,6 @@ const AddTransactionScreen = props => {
       const typeStr = type.slice(-3);
       const removeComma = money.split(',').join('');
       const moneyUpdate = removeComma - 0;
-      console.log(`Remove Comma: ${removeComma}`);
-      console.log(`Money Updated: ${moneyUpdate}`);
       // add Transaction
       const transCollRef = doc(collection(db, 'transaction'));
       await setDoc(transCollRef, {

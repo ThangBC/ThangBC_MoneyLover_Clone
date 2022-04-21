@@ -13,11 +13,42 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {formatMoney, validateCurrentDate} from '../../../utils/validations';
+import Modal from 'react-native-modal';
+import {db, doc, updateDoc, deleteDoc} from '../../../firebase/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ShowDetailTransScreen = props => {
   const {navigation, route} = props;
   const {navigate, goBack} = navigation;
-  const {typeName, des, money, date, type, nameWallet} = route.params;
+  const {idTrans, typeName, des, money, date, type, nameWallet} = route.params;
+  const [isVisible, setIsVisible] = useState(false);
+  const [disable, setDisable] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setDisable(true);
+      // delete Transaction
+      await deleteDoc(doc(db, 'transaction', idTrans));
+
+      // update User moneyTotal
+      const valUserId = await AsyncStorage.getItem('userId');
+      const valMoneyTotal = await AsyncStorage.getItem('moneyTotal');
+      const userRef = doc(db, 'users', valUserId);
+      await updateDoc(userRef, {
+        moneyTotal:
+          type == 'chi'
+            ? parseInt(valMoneyTotal) + parseInt(money)
+            : parseInt(valMoneyTotal) - parseInt(money),
+        updatedAt: validateCurrentDate(new Date()),
+      });
+      navigate('UITab');
+    } catch (error) {
+      console.log(error);
+      alert('Có lỗi xảy ra, hãy thử lại');
+      setDisable(false);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View //-----------HEADER----------------
@@ -58,7 +89,14 @@ const ShowDetailTransScreen = props => {
           />
           <Icon
             onPress={() => {
-              navigate('EditTransactionScreen');
+              navigate('EditTransactionScreen', {
+                idTrans: idTrans,
+                moneyParam: money,
+                typeNameParam: typeName,
+                typeParam: type,
+                desParam: des,
+                dateParam: date,
+              });
             }}
             name="pen"
             size={20}
@@ -71,7 +109,7 @@ const ShowDetailTransScreen = props => {
           />
           <Icon
             onPress={() => {
-              alert('Xóa');
+              setIsVisible(true);
             }}
             name="trash"
             size={20}
@@ -161,6 +199,67 @@ const ShowDetailTransScreen = props => {
           </Text>
         </View>
       </View>
+      <Modal isVisible={isVisible} animationType="slide">
+        <View
+          style={{
+            backgroundColor: 'white',
+            borderRadius: 10,
+            padding: 10,
+            width: '80%',
+            alignSelf: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              marginTop: 10,
+              color: 'black',
+              fontSize: fontSizes.h2,
+              fontWeight: 'bold',
+            }}>
+            Bạn có chắc muốn xóa ?
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 20,
+              marginBottom: 10,
+              width: '100%',
+              justifyContent: 'space-around',
+            }}>
+            <TouchableOpacity
+              onPress={() => setIsVisible(false)}
+              style={{
+                backgroundColor: colors.blurColorBlack,
+                borderRadius: 10,
+              }}>
+              <Text
+                style={{
+                  marginHorizontal: 30,
+                  marginVertical: 5,
+                  color: 'gray',
+                  fontSize: fontSizes.h3,
+                }}>
+                Hủy
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              disabled={disable}
+              onPress={handleSubmit}
+              style={{backgroundColor: 'red', borderRadius: 10}}>
+              <Text
+                style={{
+                  marginHorizontal: 30,
+                  marginVertical: 5,
+                  color: 'black',
+                  fontSize: fontSizes.h3,
+                }}>
+                Xóa
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
