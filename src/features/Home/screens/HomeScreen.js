@@ -29,7 +29,7 @@ const HomeScreen = props => {
   const {navigate, goBack} = navigation;
 
   const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(1);
   const [user, setUser] = useState({});
 
   const [routes] = useState([
@@ -88,7 +88,7 @@ const HomeScreen = props => {
       }
     });
     return () => {
-      unsubcribe();
+      unsubcribe;
     };
   }, []);
 
@@ -129,9 +129,21 @@ const HomeScreen = props => {
                 />
               );
             case 'second':
-              return <SecondPage navigation={props.navigation} route={route} />;
+              return (
+                <SecondPage
+                  navigation={props.navigation}
+                  route={route}
+                  nameWallet={user.nameWallet}
+                />
+              );
             case 'third':
-              return <ThirdPage navigation={props.navigation} route={route} />;
+              return (
+                <ThirdPage
+                  navigation={props.navigation}
+                  route={route}
+                  nameWallet={user.nameWallet}
+                />
+              );
             default:
               return null;
           }
