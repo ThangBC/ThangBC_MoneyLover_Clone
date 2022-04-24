@@ -34,13 +34,19 @@ const FirstPage = props => {
       const items = [];
 
       snapshot.docs.map(doc => {
-        if (doc.data().type == 'thu') {
-          collect.push(doc.data().money);
+        const cutStr = doc.data().date.indexOf('/');
+        const cutLastStr = doc.data().date.lastIndexOf('/');
+        const month = doc.data().date.slice(cutStr + 1, cutLastStr);
+        const currMonth = new Date().getMonth() + 1;
+        if (parseInt(month) < currMonth) {
+          if (doc.data().type == 'thu') {
+            collect.push(doc.data().money);
+          }
+          if (doc.data().type == 'chi') {
+            spent.push(doc.data().money);
+          }
+          items.push(doc.data().date);
         }
-        if (doc.data().type == 'chi') {
-          spent.push(doc.data().money);
-        }
-        items.push(doc.data().date);
       });
       setItemTrans(
         items.filter((item, index) => items.indexOf(item) === index),
@@ -49,7 +55,7 @@ const FirstPage = props => {
       setTotalSpent(spent);
     });
     return () => {
-      unsubcribe();
+      unsubcribe;
     };
   }, []);
 

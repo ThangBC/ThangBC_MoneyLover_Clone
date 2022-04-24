@@ -87,6 +87,7 @@ const EditTransactionScreen = props => {
       const valUserId = await AsyncStorage.getItem('userId');
       const valMoneyTotal = await AsyncStorage.getItem('moneyTotal');
       const userRef = doc(db, 'users', valUserId);
+
       await updateDoc(userRef, {
         moneyTotal:
           typeStr == 'thu' && typeParam == 'thu'
@@ -101,7 +102,7 @@ const EditTransactionScreen = props => {
               parseInt(moneyUpdate)
             : typeStr == 'thu' && typeParam == 'chi'
             ? parseInt(valMoneyTotal) +
-              parseInt(moneyParam) +
+              Math.abs(parseInt(moneyParam)) +
               parseInt(moneyUpdate)
             : parseInt(valMoneyTotal),
         updatedAt: validateCurrentDate(new Date()),

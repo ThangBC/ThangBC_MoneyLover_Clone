@@ -65,7 +65,7 @@ const ItemExpenseTracker = props => {
       });
     });
     return () => {
-      unsubcribe();
+      unsubcribe;
     };
   }, []);
 

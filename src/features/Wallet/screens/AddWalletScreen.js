@@ -74,7 +74,6 @@ const AddWalletScreen = props => {
         name: displayName,
         accountType: user.providerData[0].providerId,
         walletName: nameWallet,
-        firstMoney: moneyUpdate,
         moneyTotal: moneyUpdate,
         createdAt: validateCurrentDate(new Date()),
       })
